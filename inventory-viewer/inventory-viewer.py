@@ -95,9 +95,18 @@ def load_inventory_file(inventory_path: str) -> Iterable:
     return inventory_data
 
 
+def create_tmux_session_file(hosts: List[Host]):
+    tmux_file_lines = ["tmux new-window -n 'inventory-viewer'",
+                       "select-window -t 'inventory-viewer'"]
+    for host in hosts:
+        tmux_file_lines.append(f"send-keys '{host.connection_command}' C-m")
+        tmux_file_lines.append(f"split-window -h")
+    print("\\; ".join(tmux_file_lines))
+
+
 if __name__ == "__main__":
-    logging.basicConfig(level=logging.DEBUG)
+    # logging.basicConfig(level=logging.DEBUG)
     test_inventory_path = 'inventory-viewer/test-data/inventory.yml'
     inventory_data = load_inventory_file(test_inventory_path)
     inventory_parser = InventoryParser(inventory_data)
-    pass
+    create_tmux_session_file(inventory_parser.get_hosts())
