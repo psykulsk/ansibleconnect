@@ -120,7 +120,17 @@ def create_tmux_session_file(hosts: List[Host], vertical_panes):
 
 
 def parse_arguments():
-    parser = argparse.ArgumentParser()
+    description = '''
+    ansibleinviewer creates a shell command that sets up tmux layout and starts
+    an ssh session for each "sshable" host from the inventory in a separate pane.
+    Tmux available in PATH is required for this to work. 
+    
+    Example:
+    source <(inviewer -i inventory.yml)
+    '''
+
+    parser = argparse.ArgumentParser(description=description)
+
     parser.add_argument(
         '-i',
         '--inventory',
