@@ -1,6 +1,6 @@
 # Ansibleinviewer - Ansible Inventory Viewer 
 
-## SSH into all 'sshable' hosts in your inventory with one command.
+## SSH into all hosts in your inventory with one command.
 
 Ansibleinviewer creates a bash script based on your ansible inventory.
 That script will create a new tmux session and create a separate pane
