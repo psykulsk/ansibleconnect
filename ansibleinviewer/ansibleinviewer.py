@@ -105,7 +105,7 @@ def load_inventory_file(inventory_path: str) -> Iterable:
 
 
 def create_tmux_session_file(hosts: List[Host], vertical_panes):
-    tmux_file_lines = [f"PANE_WIDTH=$(expr $COLUMNS / {vertical_panes}) tmux new-session"]
+    tmux_file_lines = [f"export PANE_WIDTH=$(expr $COLUMNS / {vertical_panes}) ; tmux new-session"]
     for index, host in enumerate(hosts):
         tmux_file_lines.append(f"send-keys '{host.connection_command}' C-m")
         if index == 0:
@@ -142,6 +142,7 @@ def main():
     inventory_data = load_inventory_file(args.inventory)
     inventory_parser = InventoryParser(inventory_data)
     create_tmux_session_file(inventory_parser.get_hosts(), args.vertical_panes)
+
 
 if __name__ == "__main__":
     main()
