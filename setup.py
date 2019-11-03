@@ -17,7 +17,7 @@ setup(
     packages=['ansibleinviewer'],
     entry_points='''
     [console_scripts]
-    inviewer=ansibleinviewer.ansibleinviewer:main
+    ansibleinviewer=ansibleinviewer.ansibleinviewer:main
     '''
 
 )
