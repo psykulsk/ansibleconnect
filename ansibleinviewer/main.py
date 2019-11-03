@@ -3,6 +3,7 @@
 import argparse
 import logging
 import yaml
+import os
 from typing import Iterable, List
 
 from ansibleinviewer.host import Host
@@ -15,6 +16,10 @@ def load_inventory_file(inventory_path: str) -> Iterable:
     with open(inventory_path) as inventory_file:
         inventory_data = yaml.safe_load(inventory_file)
     return inventory_data
+
+
+def in_tmux() -> bool:
+    return 'screen' in os.environ.get('TERM', '') and 'TMUX' in os.environ
 
 
 def create_tmux_script(hosts: List[Host], vertical_panes) -> str:
@@ -61,6 +66,9 @@ def parse_arguments():
 
 
 def main():
+    if in_tmux():
+        print("echo 'Please exit current tmux session in order to use ansibleinviewer'")
+        exit(1)
     args = parse_arguments()
     inventory_data = load_inventory_file(args.inventory)
     inventory_parser = InventoryParser(inventory_data)
