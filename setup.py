@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 
 def requirements(filename):
@@ -14,7 +14,7 @@ setup(
     author_email='pitersk@gmail.com',
     install_requires=requirements('requirements.txt'),
     python_requires='>=3.4',
-    packages=['ansibleinviewer'],
+    packages= find_packages(),
     entry_points='''
     [console_scripts]
     ansibleinviewer=ansibleinviewer.ansibleinviewer:main
