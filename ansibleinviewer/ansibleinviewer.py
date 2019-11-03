@@ -110,9 +110,7 @@ def create_tmux_session_file(hosts: List[Host], vertical_panes):
         tmux_file_lines.append(f"send-keys '{host.connection_command}' C-m")
         if index == 0:
             tmux_file_lines.append(f"split-window -v")
-        elif index == 1:
-            pass
-        else:
+        elif index != len(hosts) - 1:
             tmux_file_lines.append(f"select-pane -t {int(index / vertical_panes)}")
             tmux_file_lines.append(f"split-window -h")
     for index in range(len(hosts)):
@@ -132,15 +130,18 @@ def parse_arguments():
     parser.add_argument(
         '-v',
         '--vertical_panes',
-        default=3,
+        default=2,
         type=int,
         help='Maximum number of tmux vertical panes'
     )
     return parser.parse_args()
 
 
-if __name__ == "__main__":
+def main():
     args = parse_arguments()
     inventory_data = load_inventory_file(args.inventory)
     inventory_parser = InventoryParser(inventory_data)
     create_tmux_session_file(inventory_parser.get_hosts(), args.vertical_panes)
+
+if __name__ == "__main__":
+    main()
