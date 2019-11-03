@@ -2,6 +2,7 @@
 
 import yaml
 import logging
+import argparse
 from typing import Iterable, List, Dict
 
 logger = logging.getLogger(__name__)
@@ -9,12 +10,15 @@ logger = logging.getLogger(__name__)
 
 class AnsibleSSHOptions:
     def __init__(self, host_data: dict):
-        self.ansible_ssh_user = host_data.get('ansible_ssh_user')
+        self.ansible_ssh_user = host_data['ansible_ssh_user']
         self.ansible_ssh_common_args = host_data.get('ansible_ssh_common_args', '')
         self.ansible_ssh_pass = host_data.get('ansible_ssh_pass', '')
 
     def get_command_for_host(self, host):
-        return f'ssh {self.ansible_ssh_common_args} {self.ansible_ssh_user}@{host}'
+        ssh_pass = ''
+        if self.ansible_ssh_pass != '':
+            ssh_pass = f'sshpass -p "{self.ansible_ssh_pass}" '
+        return ssh_pass + f'ssh {self.ansible_ssh_common_args} {self.ansible_ssh_user}@{host}'
 
 
 def update_hosts_dict_with_new_hosts(hosts_dict: dict, new_hosts_dict: dict):
@@ -54,12 +58,17 @@ class InventoryParser:
             exit(1)
 
         for hostname, host_data in hosts_dict.items():
-            ansible_host = host_data.get('ansible_host')
-            ansible_connection_options = AnsibleSSHOptions(host_data)
-            host = Host(hostname, ansible_host, ansible_connection_options)
-            logger.debug(
-                f"Found host {hostname}. Host's connection command: {host.connection_command}")
-            self.hosts.add(host)
+            try:
+                ansible_host = host_data.get('ansible_host')
+                if ansible_host == 'localhost':
+                    continue
+                ansible_connection_options = AnsibleSSHOptions(host_data)
+                host = Host(hostname, ansible_host, ansible_connection_options)
+                logger.debug(
+                    f"Found host {hostname}. Host's connection command: {host.connection_command}")
+                self.hosts.add(host)
+            except KeyError:
+                pass
 
     def parse_inventory_data_list(self, inventory_data: list) -> Dict:
         hosts_dict = {}
@@ -95,18 +104,43 @@ def load_inventory_file(inventory_path: str) -> Iterable:
     return inventory_data
 
 
-def create_tmux_session_file(hosts: List[Host]):
-    tmux_file_lines = ["tmux new-window -n 'inventory-viewer'",
-                       "select-window -t 'inventory-viewer'"]
-    for host in hosts:
+def create_tmux_session_file(hosts: List[Host], vertical_panes):
+    tmux_file_lines = [f"PANE_WIDTH=$(expr $COLUMNS / {vertical_panes}) tmux new-session"]
+    for index, host in enumerate(hosts):
         tmux_file_lines.append(f"send-keys '{host.connection_command}' C-m")
-        tmux_file_lines.append(f"split-window -h")
-    print("\\; ".join(tmux_file_lines))
+        if index == 0:
+            tmux_file_lines.append(f"split-window -v")
+        elif index == 1:
+            pass
+        else:
+            tmux_file_lines.append(f"select-pane -t {int(index / vertical_panes)}")
+            tmux_file_lines.append(f"split-window -h")
+    for index in range(len(hosts)):
+        tmux_file_lines.append(f"resizep -t {index} -x $PANE_WIDTH")
+    tmux_script = " \\; ".join(tmux_file_lines)
+    print(tmux_script)
+
+
+def parse_arguments():
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        '-i',
+        '--inventory',
+        required=True,
+        help='Path to the ansible inventory file'
+    )
+    parser.add_argument(
+        '-v',
+        '--vertical_panes',
+        default=3,
+        type=int,
+        help='Maximum number of tmux vertical panes'
+    )
+    return parser.parse_args()
 
 
 if __name__ == "__main__":
-    # logging.basicConfig(level=logging.DEBUG)
-    test_inventory_path = 'inventory-viewer/test-data/inventory.yml'
-    inventory_data = load_inventory_file(test_inventory_path)
+    args = parse_arguments()
+    inventory_data = load_inventory_file(args.inventory)
     inventory_parser = InventoryParser(inventory_data)
-    create_tmux_session_file(inventory_parser.get_hosts())
+    create_tmux_session_file(inventory_parser.get_hosts(), args.vertical_panes)
