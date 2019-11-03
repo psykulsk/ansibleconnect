@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
-import yaml
 import argparse
 import logging
+import yaml
 from typing import Iterable, List
 
 from ansibleinviewer.host import Host
@@ -17,7 +17,7 @@ def load_inventory_file(inventory_path: str) -> Iterable:
     return inventory_data
 
 
-def create_tmux_session_file(hosts: List[Host], vertical_panes):
+def create_tmux_script(hosts: List[Host], vertical_panes) -> str:
     tmux_file_lines = [f"export PANE_WIDTH=$(expr $COLUMNS / {vertical_panes}) ; tmux new-session"]
     for index, host in enumerate(hosts):
         tmux_file_lines.append(f"send-keys '{host.connection_command}' C-m")
@@ -29,7 +29,7 @@ def create_tmux_session_file(hosts: List[Host], vertical_panes):
     for index in range(len(hosts)):
         tmux_file_lines.append(f"resizep -t {index} -x $PANE_WIDTH")
     tmux_script = " \\; ".join(tmux_file_lines)
-    print(tmux_script)
+    return tmux_script
 
 
 def parse_arguments():
@@ -64,7 +64,8 @@ def main():
     args = parse_arguments()
     inventory_data = load_inventory_file(args.inventory)
     inventory_parser = InventoryParser(inventory_data)
-    create_tmux_session_file(inventory_parser.get_hosts(), args.vertical_panes)
+    tmux_script = create_tmux_script(inventory_parser.get_hosts(), args.vertical_panes)
+    print(tmux_script)
 
 
 if __name__ == "__main__":
