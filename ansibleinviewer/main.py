@@ -29,7 +29,10 @@ def create_tmux_script(hosts: List[Host], vertical_panes) -> str:
         if index == 0:
             tmux_file_lines.append(f"split-window -v")
         elif index != len(hosts) - 1:
-            tmux_file_lines.append(f"select-pane -t {int(index / vertical_panes)}")
+            if index < vertical_panes:
+                tmux_file_lines.append("select-pane -t 1")
+            else:
+                tmux_file_lines.append(f"select-pane -t {vertical_panes+1}")
             tmux_file_lines.append(f"split-window -h")
     for index in range(len(hosts)):
         tmux_file_lines.append(f"resizep -t {index} -x $PANE_WIDTH")
