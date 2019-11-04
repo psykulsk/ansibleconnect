@@ -7,6 +7,22 @@ That script will create a new tmux session and create a separate pane
 for each one of your 'sshable' inventory hosts. Inside of each of the
 panes an ssh connection to the pane's host will be established.
 
+![](doc/demo.gif)
+
+### Setup example (on Ubuntu):
+```
+sudo apt install tmux
+sudo apt install sshpass
+git clone https://github.com/psykulsk/ansibleinviewer.git
+cd ansibleinviewer
+python3 -m pip install .
+```
+
+### Usage example:
+```
+source <(ansibleinviewer -i inventory.yml)
+```
+
 ### Authentication
 
 
@@ -23,18 +39,3 @@ ssh-add ~/.ssh/my_private_key\
 #### sshpass
 
 If `ansible_ssh_pass` variable is used in the inventory, one should installl the `sshpass` and make it discoverable via `PATH`. Please note that when using the sshpass, password will passed in plaintext and it will be saved in each of the tmux shells' history.
-
-### Setup example (on Ubuntu):
-```
-sudo apt install tmux
-sudo apt install sshpass
-git clone https://github.com/psykulsk/ansibleinviewer.git
-cd ansibleinviewer
-python3 -m pip install .
-```
-
-### Example:
-```
-source <(ansibleinviewer -i inventory.yml)
-```
-
