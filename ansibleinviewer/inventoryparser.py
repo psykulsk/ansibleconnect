@@ -15,10 +15,47 @@ def update_hosts_dict_with_new_hosts(hosts_dict: dict, new_hosts_dict: dict):
 
 
 class InventoryParser:
-    def __init__(self, inventory_data):
+    def __init__(self, inventory_data, groups=None):
         self.hosts: set = set()
-        self.inventory_data: dict = inventory_data
+        if groups:
+            self.target_hosts: set = self.truncate_data(inventory_data, groups)
+        else:
+            self.target_hosts = None
+        self.inventory_data = inventory_data
         self.parse_inventory(inventory_data)
+
+    def truncate_data(self, inventory_data: Iterable, groups: Iterable):
+        """Truncate targeted hosts based on specified groups to connect with.
+        This method returns list of addreses that should be opened.
+        """
+        if isinstance(inventory_data, list):
+            return inventory_data
+        else:
+            target_hosts = set()
+            for group, limit in groups:
+                if group in inventory_data and 'hosts' in inventory_data[group]:
+                    whole_group = inventory_data[group]['hosts']
+                    if limit is not None:
+                        target_hosts.update(self.limit_hosts(whole_group, limit))
+                    else:
+                        target_hosts.update(whole_group)
+            return target_hosts
+
+    @staticmethod
+    def limit_hosts(inventory_data: Iterable, limit: slice):
+        """This method limits hosts based on specified limit
+        """
+        if isinstance(inventory_data, list):
+            limited_hosts = inventory_data[limit]
+        elif isinstance(inventory_data, dict):
+            limited_hosts = [*inventory_data.keys()][limit]
+        else:
+            logger.error('Error parsing the inventory file. Expected a dictionary or a list.')
+            exit(1)
+        if isinstance(limited_hosts, str):
+            return [limited_hosts]
+        else:
+            return limited_hosts
 
     def parse_inventory(self, inventory_data: Iterable):
         hosts_dict = {}
@@ -68,4 +105,11 @@ class InventoryParser:
         return hosts_dict
 
     def get_hosts(self) -> List[Host]:
-        return list(self.hosts)
+        if self.target_hosts:
+            host_list = []
+            for host in self.hosts:
+                if host.hostname in self.target_hosts:
+                    host_list.append(host)
+            return host_list
+        else:
+            return list(self.hosts)

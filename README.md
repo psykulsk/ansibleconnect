@@ -19,9 +19,15 @@ python3 -m pip install .
 ```
 
 ### Usage example:
+
 ```
 source <(ansibleinviewer -i inventory.yml)
 ```
+
+#### Possible flags
+
+* `-i`, `--inventory` - Path to ansible inventory
+* `-g`, `--groups` - Inventory groups of hosts to connect to
 
 ### Authentication
 
