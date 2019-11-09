@@ -1,39 +1,30 @@
 from parameterized import parameterized
 import unittest
 
-from ansibleinviewer.main import slice_from_string, parse_inventory_groups
+from ansibleinviewer.main import parse_inventory_groups
 
 
 class TestMain(unittest.TestCase):
 
-    @parameterized.expand([
-        ('3', 3),
-        (':3', slice(None, 3, None)),
-        ('3:', slice(3, None, None)),
-        (':', slice(None, None, None))
-    ])
-    def test_slice_from_string(self, string, expected):
-        self.assertEqual(slice_from_string(string), expected)
+    def test_parse_inventory_groups_single_group(self):
+        groups, no_groups = parse_inventory_groups('test_group')
+        self.assertListEqual(['test_group'], groups)
+        self.assertEqual([], no_groups)
+
+    def test_parse_inventory_groups_single_no_group(self):
+        groups, no_groups = parse_inventory_groups('!test_group')
+        self.assertListEqual(['test_group'], no_groups)
+        self.assertEqual([], groups)
 
     @parameterized.expand([
-        ('', None),
-        ('[3]', 3),
-        ('[:3]', slice(None, 3, None))
+        ('group1:group2', ['group1', 'group2'], []),
+        ('group1:!group2', ['group1'], ['group2']),
+        ('!group1:group2', ['group2'], ['group1']),
+        ('!group1:!group2', [], ['group1', 'group2']),
+        ('group1:!group2:group3:!group4', ['group1', 'group3'], ['group2', 'group4'])
     ])
-    def test_parse_inventory_groups_single_group(self, limit_string, limit):
-        expected = [('test_group', limit)]
-        tested_group_string = [f'test_group{limit_string}']
-        self.assertListEqual(expected, parse_inventory_groups(tested_group_string))
-
-    @parameterized.expand([
-        (['', ''], [None, None]),
-        (['[4]', ''], [4, None]),
-        (['[4:]', ''], [slice(4, None, None), None]),
-        (['[4:]', '[:2]'], [slice(4, None, None), slice(None, 2, None)]),
-        (['[4:]', '[7]'], [slice(4, None, None), 7]),
-    ])
-    def test_parse_inventory_groups_multi_group(self, limit_strings, limits):
-        groups = ['test_group1', 'test_group2']
-        expected = list(zip(groups, limits))
-        groups_to_parse = [f'{group}{limit}' for group, limit in zip(groups, limit_strings)]
-        self.assertListEqual(sorted(expected), sorted(parse_inventory_groups(groups_to_parse)))
+    def test_parse_inventory_groups_multi_group(self, input_argument,
+                                                expected_groups, expected_no_groups):
+        groups, no_groups = parse_inventory_groups(input_argument)
+        self.assertListEqual(sorted(expected_groups), sorted(groups))
+        self.assertListEqual(sorted(expected_no_groups), sorted(no_groups))

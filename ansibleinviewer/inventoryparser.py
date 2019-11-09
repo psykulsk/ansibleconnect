@@ -15,12 +15,8 @@ def update_hosts_dict_with_new_hosts(hosts_dict: dict, new_hosts_dict: dict):
 
 
 class InventoryParser:
-    def __init__(self, inventory_data, groups=None):
+    def __init__(self, inventory_data):
         self.hosts: set = set()
-        if groups:
-            self.target_hosts: set = self.truncate_data(inventory_data, groups)
-        else:
-            self.target_hosts = None
         self.inventory_data = inventory_data
         self.parse_inventory(inventory_data)
 
@@ -32,30 +28,10 @@ class InventoryParser:
             return inventory_data
         else:
             target_hosts = set()
-            for group, limit in groups:
+            for group in groups:
                 if group in inventory_data and 'hosts' in inventory_data[group]:
-                    whole_group = inventory_data[group]['hosts']
-                    if limit is not None:
-                        target_hosts.update(self.limit_hosts(whole_group, limit))
-                    else:
-                        target_hosts.update(whole_group)
+                    target_hosts.update(inventory_data[group]['hosts'])
             return target_hosts
-
-    @staticmethod
-    def limit_hosts(inventory_data: Iterable, limit: slice):
-        """This method limits hosts based on specified limit
-        """
-        if isinstance(inventory_data, list):
-            limited_hosts = inventory_data[limit]
-        elif isinstance(inventory_data, dict):
-            limited_hosts = [*inventory_data.keys()][limit]
-        else:
-            logger.error('Error parsing the inventory file. Expected a dictionary or a list.')
-            exit(1)
-        if isinstance(limited_hosts, str):
-            return [limited_hosts]
-        else:
-            return limited_hosts
 
     def parse_inventory(self, inventory_data: Iterable):
         hosts_dict = {}
@@ -104,12 +80,17 @@ class InventoryParser:
             update_hosts_dict_with_new_hosts(hosts_dict, new_hosts_dict)
         return hosts_dict
 
-    def get_hosts(self) -> List[Host]:
-        if self.target_hosts:
-            host_list = []
+    def get_hosts(self, groups=None, no_groups=None) -> List[Host]:
+        host_list = []
+        if groups and groups != []:
+            target_hosts = self.truncate_data(self.inventory_data, groups)
             for host in self.hosts:
-                if host.hostname in self.target_hosts:
+                if host.hostname in target_hosts:
                     host_list.append(host)
-            return host_list
         else:
-            return list(self.hosts)
+            host_list = list(self.hosts)
+        limited_hosts = []
+        if no_groups and no_groups != []:
+            no_hosts = self.truncate_data(self.inventory_data, no_groups)
+            host_list = [host for host in host_list if host.hostname not in no_hosts]
+        return host_list

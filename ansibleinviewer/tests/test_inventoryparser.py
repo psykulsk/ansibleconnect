@@ -17,6 +17,8 @@ class TestInventoryParser(unittest.TestCase):
     groupD_hosts = ['10.0.0.4', '172.16.0.8', '192.168.0.3']
     groupE_hosts = ['10.0.0.4', '172.16.0.8', '192.168.0.3']
     groupF_hosts = all_hosts
+    groupAC_hosts = groupA_hosts+groupC_hosts
+    groupDC_hosts = groupD_hosts+groupC_hosts
 
     @staticmethod
     def load_inventory_file(inventory_path: str):
@@ -26,11 +28,11 @@ class TestInventoryParser(unittest.TestCase):
 
     def setUp(self):
         dir_path = os.path.dirname(os.path.realpath(__file__))
-        self.inventory_data = self.load_inventory_file(f'{ dir_path}/files/inventory.yml')
+        inventory_data = self.load_inventory_file(f'{ dir_path}/files/inventory.yml')
+        self.inventory = InventoryParser(inventory_data)
 
     def test_inventory_parse_all_hosts(self):
-        inventory = InventoryParser(self.inventory_data)
-        hosts_from_inventory = sorted([host.hostname for host in inventory.get_hosts()])
+        hosts_from_inventory = sorted([host.hostname for host in self.inventory.get_hosts()])
         self.assertListEqual(hosts_from_inventory, self.all_hosts)
 
     @parameterized.expand([('groupA', groupA_hosts),
@@ -39,9 +41,8 @@ class TestInventoryParser(unittest.TestCase):
                            ('groupD', groupD_hosts),
                            ('groupE', groupE_hosts),
                            ('groupF', groupF_hosts)])
-    def test_inventory_parse_group_hosts_no_limit(self, group_name, group_hosts):
-        inventory = InventoryParser(self.inventory_data, [(group_name, None)])
-        hosts_from_inventory = [host.hostname for host in inventory.get_hosts()]
+    def test_inventory_parse_group_hosts(self, group_name, group_hosts):
+        hosts_from_inventory = [host.hostname for host in self.inventory.get_hosts([group_name])]
         self.assertListEqual(sorted(hosts_from_inventory), sorted(group_hosts))
 
     @parameterized.expand([('groupA', groupA_hosts),
@@ -50,38 +51,19 @@ class TestInventoryParser(unittest.TestCase):
                            ('groupD', groupD_hosts),
                            ('groupE', groupE_hosts),
                            ('groupF', groupF_hosts)])
-    def test_inventory_parse_group_hosts_left_side_limit(self, group_name, group_hosts):
-        limit = slice(None, 2, None)
-        inventory = InventoryParser(self.inventory_data, [(group_name, limit)])
-        hosts_from_inventory = sorted([host.hostname for host in inventory.get_hosts()])
-        self.assertListEqual(sorted(hosts_from_inventory), sorted(group_hosts[limit]))
+    def test_inventory_parse_no_group_hosts(self, group_name, group_hosts):
+        hosts_from_inventory = [host.hostname for host
+                                in self.inventory.get_hosts(no_groups=[group_name])]
+        expected_hosts = list(set(self.all_hosts) - set(group_hosts))
+        self.assertListEqual(sorted(hosts_from_inventory), sorted(hosts_from_inventory))
 
-    @parameterized.expand([('groupA', groupA_hosts),
-                           ('groupB', groupB_hosts),
-                           ('groupD', groupD_hosts),
-                           ('groupE', groupE_hosts),
-                           ('groupF', groupF_hosts)])
-    def test_inventory_parse_group_hosts_right_side_limit(self, group_name, group_hosts):
-        limit = slice(2, None, None)
-        inventory = InventoryParser(self.inventory_data, [(group_name, limit)])
-        hosts_from_inventory = sorted([host.hostname for host in inventory.get_hosts()])
-        self.assertListEqual(sorted(hosts_from_inventory), sorted(group_hosts[limit]))
-
-    def test_inventory_parse_2_groups(self):
-        inventory = InventoryParser(self.inventory_data, [('groupA', None), ('groupC', None)])
-        hosts_from_inventory = sorted([host.hostname for host in inventory.get_hosts()])
-        expected_list = self.groupA_hosts + self.groupC_hosts
-        self.assertListEqual(sorted(expected_list), sorted(hosts_from_inventory))
-
-    def test_inventory_parse_2_groups_one_with_limit(self):
-        limit = slice(None, 2, None)
-        inventory = InventoryParser(self.inventory_data, [('groupA', limit), ('groupC', None)])
-        hosts_from_inventory = sorted([host.hostname for host in inventory.get_hosts()])
-        expected_list = self.groupA_hosts[:2] + self.groupC_hosts
-        self.assertListEqual(sorted(expected_list), sorted(hosts_from_inventory))
-
-    def test_inventory_parse_2_groups_both_with_limit(self):
-        inventory = InventoryParser(self.inventory_data, [('groupA', 2), ('groupC', 0)])
-        hosts_from_inventory = sorted([host.hostname for host in inventory.get_hosts()])
-        expected_list = [self.groupA_hosts[2], self.groupC_hosts[0]]
-        self.assertListEqual(sorted(expected_list), sorted(hosts_from_inventory))
+    @parameterized.expand([(['groupA', 'groupC'], [], groupAC_hosts, []),
+                           (['groupD'], ['groupE'], groupD_hosts, groupE_hosts),
+                           ([], ['groupD', 'groupC'], [], groupDC_hosts)])
+    def test_inventory_parse_mixed_group_hosts(self, group_name, no_group_name,
+                                               group_hosts, no_group_hosts):
+        hosts_from_inventory = [host.hostname for host
+                                in self.inventory.get_hosts(groups=group_name,
+                                                            no_groups=no_group_name)]
+        expected_hosts = list(set(group_hosts) - set(no_group_hosts))
+        self.assertListEqual(sorted(hosts_from_inventory), sorted(hosts_from_inventory))

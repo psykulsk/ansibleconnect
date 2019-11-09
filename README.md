@@ -1,4 +1,4 @@
-# Ansibleinviewer - Ansible Inventory Viewer 
+# Ansibleinviewer - Ansible Inventory Viewer
 
 ## SSH into all hosts in your inventory with one command.
 
@@ -18,16 +18,32 @@ cd ansibleinviewer
 python3 -m pip install .
 ```
 
-### Usage example:
+### Usage examples:
 
+Connect to all hosts in inventory:
 ```
 source <(ansibleinviewer -i inventory.yml)
+```
+
+Connect to all hosts from group1 and group2:
+```
+source <(ansibleinviewer -i inventory.yml -g 'group1:group2')
+```
+
+Connect to all hosts from group1 except for hosts that are also in group2:
+```
+source <(ansibleinviewer -i inventory.yml -g 'group1:!group2')
+```
+
+Connect to all hosts from inventory except for hosts in group1:
+```
+source <(ansibleinviewer -i inventory.yml -g '!group1')
 ```
 
 #### Possible flags
 
 * `-i`, `--inventory` - Path to ansible inventory
-* `-g`, `--groups` - Inventory groups of hosts to connect to
+* `-g`, `--groups` - Inventory groups of hosts to connect to (multiple groups should be concentrated with *:*. *!* in front of group name means that ansibleinviewer should not connect to hosts form this group)
 
 ### Authentication
 
