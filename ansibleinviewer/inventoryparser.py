@@ -17,7 +17,7 @@ def update_hosts_dict_with_new_hosts(hosts_dict: dict, new_hosts_dict: dict):
 class InventoryParser:
     def __init__(self, inventory_data):
         self.hosts: set = set()
-        self.inventory_data = inventory_data
+        self.inventory_data: dict = inventory_data
         self.parse_inventory(inventory_data)
 
     def truncate_data(self, inventory_data: Iterable, groups: Iterable):
