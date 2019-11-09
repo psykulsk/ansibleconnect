@@ -55,15 +55,15 @@ class TestInventoryParser(unittest.TestCase):
         hosts_from_inventory = [host.hostname for host
                                 in self.inventory.get_hosts(no_groups=[group_name])]
         expected_hosts = list(set(self.all_hosts) - set(group_hosts))
-        self.assertListEqual(sorted(hosts_from_inventory), sorted(hosts_from_inventory))
+        self.assertListEqual(sorted(expected_hosts), sorted(hosts_from_inventory))
 
     @parameterized.expand([(['groupA', 'groupC'], [], groupAC_hosts, []),
                            (['groupD'], ['groupE'], groupD_hosts, groupE_hosts),
-                           ([], ['groupD', 'groupC'], [], groupDC_hosts)])
+                           ([], ['groupD', 'groupC'], all_hosts, groupDC_hosts)])
     def test_inventory_parse_mixed_group_hosts(self, group_name, no_group_name,
                                                group_hosts, no_group_hosts):
         hosts_from_inventory = [host.hostname for host
                                 in self.inventory.get_hosts(groups=group_name,
                                                             no_groups=no_group_name)]
         expected_hosts = list(set(group_hosts) - set(no_group_hosts))
-        self.assertListEqual(sorted(hosts_from_inventory), sorted(hosts_from_inventory))
+        self.assertListEqual(sorted(expected_hosts), sorted(hosts_from_inventory))

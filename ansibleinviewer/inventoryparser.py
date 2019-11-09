@@ -89,7 +89,6 @@ class InventoryParser:
                     host_list.append(host)
         else:
             host_list = list(self.hosts)
-        limited_hosts = []
         if no_groups and no_groups != []:
             no_hosts = self.truncate_data(self.inventory_data, no_groups)
             host_list = [host for host in host_list if host.hostname not in no_hosts]

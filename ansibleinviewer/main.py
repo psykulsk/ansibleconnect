@@ -40,7 +40,6 @@ def create_tmux_script(hosts: List[Host], vertical_panes) -> str:
     return tmux_script
 
 
-
 def parse_inventory_groups(args_groups):
     """Parse list of inventory groups passed via CLI
     Groups with indices like: 3, [3:], [:3] should be parsed into slices
@@ -107,7 +106,8 @@ def main():
     inventory_data = load_inventory_file(args.inventory)
     groups, no_groups = parse_inventory_groups(args.groups)
     inventory_parser = InventoryParser(inventory_data)
-    tmux_script = create_tmux_script(inventory_parser.get_hosts(groups, no_groups), args.vertical_panes)
+    tmux_script = create_tmux_script(inventory_parser.get_hosts(groups, no_groups),
+                                     args.vertical_panes)
     print(tmux_script)
 
 
