@@ -7,7 +7,7 @@ import os
 from typing import Iterable, List
 
 from ansibleinviewer.host import Host
-from ansibleinviewer.inventoryparser import InventoryParser
+from ansibleinviewer.inventoryparser import Inventory
 
 logger = logging.getLogger(__name__)
 
@@ -105,10 +105,9 @@ def main():
         print("echo 'Please exit current tmux session in order to use ansibleinviewer'")
         exit(1)
     args = parse_arguments()
-    inventory_data = load_inventory_file(args.inventory)
     groups, no_groups = parse_inventory_groups(args.groups)
-    inventory_parser = InventoryParser(inventory_data)
-    tmux_script = create_tmux_script(inventory_parser.get_hosts(groups, no_groups),
+    inventory = Inventory(args.inventory)
+    tmux_script = create_tmux_script(inventory.get_hosts(groups, no_groups),
                                      args.vertical_panes)
     print(tmux_script)
 
