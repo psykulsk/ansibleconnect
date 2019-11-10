@@ -40,12 +40,38 @@ def create_tmux_script(hosts: List[Host], vertical_panes) -> str:
     return tmux_script
 
 
+def parse_inventory_groups(args_groups):
+    """Parse list of inventory groups passed via CLI
+    Groups with indices like: 3, [3:], [:3] should be parsed into slices
+    that later can be utilizes as list indices on inventory parsing
+
+    :param args_groups: List of strings with groups
+    :type args_groups: list
+
+    :return: Two lists of:
+                * groups that should be selected
+                * groups that should be ommited
+    :rtype: list
+    """
+    if not args_groups:
+        return None, None
+    provided_groups = args_groups.split(':')
+    groups = []
+    no_groups = []
+    for group in provided_groups:
+        if group.startswith('!'):
+            no_groups.append(group[1:])
+        else:
+            groups.append(group)
+    return groups, no_groups
+
+
 def parse_arguments():
     description = '''
     ansibleinviewer creates a shell command that sets up tmux layout and starts
     an ssh session for each "sshable" host from the inventory in a separate pane.
-    Tmux available in PATH is required for this to work. 
-    
+    Tmux available in PATH is required for this to work.
+
     Example:
     source <(inviewer -i inventory.yml)
     '''
@@ -57,6 +83,12 @@ def parse_arguments():
         '--inventory',
         required=True,
         help='Path to the ansible inventory file'
+    )
+    parser.add_argument(
+        '-g',
+        '--groups',
+        default=None,
+        help='Groups to connect with'
     )
     parser.add_argument(
         '-v',
@@ -74,8 +106,10 @@ def main():
         exit(1)
     args = parse_arguments()
     inventory_data = load_inventory_file(args.inventory)
+    groups, no_groups = parse_inventory_groups(args.groups)
     inventory_parser = InventoryParser(inventory_data)
-    tmux_script = create_tmux_script(inventory_parser.get_hosts(), args.vertical_panes)
+    tmux_script = create_tmux_script(inventory_parser.get_hosts(groups, no_groups),
+                                     args.vertical_panes)
     print(tmux_script)
 
 

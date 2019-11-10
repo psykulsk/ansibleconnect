@@ -20,6 +20,19 @@ class InventoryParser:
         self.inventory_data: dict = inventory_data
         self.parse_inventory(inventory_data)
 
+    def truncate_data(self, inventory_data: Iterable, groups: Iterable):
+        """Truncate targeted hosts based on specified groups to connect with.
+        This method returns list of addreses that should be opened.
+        """
+        if isinstance(inventory_data, list):
+            return inventory_data
+        else:
+            target_hosts = set()
+            for group in groups:
+                if group in inventory_data and 'hosts' in inventory_data[group]:
+                    target_hosts.update(inventory_data[group]['hosts'])
+            return target_hosts
+
     def parse_inventory(self, inventory_data: Iterable):
         hosts_dict = {}
         if isinstance(inventory_data, dict):
@@ -67,5 +80,16 @@ class InventoryParser:
             update_hosts_dict_with_new_hosts(hosts_dict, new_hosts_dict)
         return hosts_dict
 
-    def get_hosts(self) -> List[Host]:
-        return list(self.hosts)
+    def get_hosts(self, groups=None, no_groups=None) -> List[Host]:
+        host_list = []
+        if groups and groups != []:
+            target_hosts = self.truncate_data(self.inventory_data, groups)
+            for host in self.hosts:
+                if host.hostname in target_hosts:
+                    host_list.append(host)
+        else:
+            host_list = list(self.hosts)
+        if no_groups and no_groups != []:
+            no_hosts = self.truncate_data(self.inventory_data, no_groups)
+            host_list = [host for host in host_list if host.hostname not in no_hosts]
+        return host_list
