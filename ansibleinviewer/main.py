@@ -53,6 +53,8 @@ def parse_inventory_groups(args_groups):
                 * groups that should be ommited
     :rtype: list
     """
+    if not args_groups:
+        return None, None
     provided_groups = args_groups.split(':')
     groups = []
     no_groups = []

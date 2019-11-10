@@ -1,0 +1,125 @@
+all:
+  vars:
+    varA: 'a'
+    varB: 'b'
+    varC:
+      - 'uno'
+      - 'dos'
+      - 'tres'
+groupA:
+  hosts:
+    10.0.0.5:
+      hostvar: test
+    172.16.0.30:
+      hostvar: test
+    192.168.0.2:
+      hostvar: test2
+groupB:
+  hosts:
+    10.0.0.4:
+      ansible_become: true
+      ansible_host: 10.0.0.4
+      ansible_ssh_common_args: -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no
+      ansible_ssh_pass: null
+      ansible_ssh_user: root
+    10.0.0.5:
+      ansible_become: true
+      ansible_host: 10.0.0.5
+      ansible_ssh_common_args: -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no
+        -o ProxyCommand="ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no
+        -o ServerAliveInterval=5 -o ServerAliveCountMax=60 -W %h:%p -q root@1.2.3.4"
+      ansible_ssh_pass: null
+      ansible_ssh_user: root
+    172.16.0.30:
+      ansible_become: true
+      ansible_host: 172.16.0.30
+      ansible_ssh_common_args: -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no
+      ansible_ssh_pass: null
+      ansible_ssh_user: root
+    172.16.0.43:
+      ansible_become: true
+      ansible_host: 172.16.0.43
+      ansible_ssh_common_args: -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no
+        -o ProxyCommand="ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no
+        -o ServerAliveInterval=5 -o ServerAliveCountMax=60 -W %h:%p -q root@4.3.2.1"
+      ansible_ssh_pass: null
+      ansible_ssh_user: root
+    172.16.0.8:
+      ansible_become: true
+      ansible_host: 172.16.0.8
+      ansible_ssh_common_args: -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no
+      ansible_ssh_pass: null
+      ansible_ssh_user: root
+      private_ip: 172.16.0.8
+    192.168.0.2:
+      ansible_become: true
+      ansible_host: 192.168.0.2
+      ansible_ssh_common_args: -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no
+        -o ProxyCommand="ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no
+        -o ServerAliveInterval=5 -o ServerAliveCountMax=60 -W %h:%p -q root@9.8.7.6"
+      ansible_ssh_pass: null
+      ansible_ssh_user: root
+    192.168.0.3:
+      ansible_become: true
+      ansible_host: 9.8.7.6
+      ansible_ssh_common_args: -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no
+      ansible_ssh_pass: null
+      ansible_ssh_user: root
+groupC:
+  hosts:
+    172.16.0.43:
+      Cvar: test_c_group
+groupD:
+  hosts:
+    10.0.0.4:
+      peers:
+      - 172.16.0.8
+      - 192.168.0.3
+      myname: Dhost1
+      deploy: true
+      zones: &id001
+      - a
+      - b
+      - c
+      services: []
+    172.16.0.8:
+      peers:
+      - 10.0.0.4
+      - 192.168.0.3
+      myname: Dhost2
+      deploy: true
+      zones: *id001
+      services: []
+    192.168.0.3:
+      peers:
+      - 10.0.0.4
+      - 192.168.0.3
+      myname: Dhost3
+      deploy: true
+      zones: *id001
+      services: []
+groupE:
+  hosts:
+    10.0.0.4:
+      myname: Dhost1
+    172.16.0.8:
+      myname: Dhost2
+    192.168.0.3:
+      myname: Dhost3
+localhost:
+  hosts:
+    localhost:
+      ansible_connection: local
+      ansible_python_interpreter: python
+      config_file: /my/test/config.yml
+      connection: local
+  vars: {}
+groupF:
+  hosts:
+    10.0.0.4: {}
+    10.0.0.5: {}
+    172.16.0.30: {}
+    172.16.0.43: {}
+    172.16.0.8: {}
+    192.168.0.2: {}
+    192.168.0.3: {}
