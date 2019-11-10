@@ -7,6 +7,7 @@ def requirements(filename):
     print(lines)
     return lines
 
+
 setup(
     name='ansibleinviewer',
     version='0.1',
@@ -14,7 +15,7 @@ setup(
     author_email='pitersk@gmail.com',
     install_requires=requirements('requirements.txt'),
     python_requires='>=3.4',
-    packages= find_packages(),
+    packages=find_packages(),
     entry_points='''
     [console_scripts]
     ansibleinviewer=ansibleinviewer.main:main
