@@ -14,7 +14,6 @@ setup(
     author='Piotr Sykulski',
     author_email='pitersk@gmail.com',
     install_requires=requirements('requirements.txt'),
-    python_requires='>=3.4',
     packages=find_packages(),
     entry_points='''
     [console_scripts]
