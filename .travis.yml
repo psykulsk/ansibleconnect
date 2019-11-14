@@ -1,6 +1,6 @@
 language: python
 python:
-  - "3.4"
+  - "2.7"
   - "3.5"
   - "3.6"
   - "3.7"
@@ -8,9 +8,16 @@ python:
   - "3.8-dev"  # 3.8 development branch
   - "nightly"  # nightly build
 # command to install dependencies
+env:
+  - USED_ANSIBLE_VERSION=2.5
+  - USED_ANSIBLE_VERSION=2.6
+  - USED_ANSIBLE_VERSION=2.7
+  - USED_ANSIBLE_VERSION=2.8
+  - USED_ANSIBLE_VERSION=2.9
 install:
   - pip install .
   - pip install -r test_requirements.txt
+  - pip install --force-reinstall ansible==USED_ANSIBLE_VERSION
 # command to run tests
 script:
   - pytest
