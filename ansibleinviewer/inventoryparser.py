@@ -1,19 +1,11 @@
 import logging
-from typing import Iterable, Dict, List
-from ansibleinviewer.connectionoptions.ansiblesshoptions import AnsibleSSHOptions
-from ansibleinviewer.host import Host
+from typing import List
+
+from ansible.inventory.host import Host
 from ansible.inventory.manager import InventoryManager
 from ansible.parsing.dataloader import DataLoader
 
 logger = logging.getLogger(__name__)
-
-
-def update_hosts_dict_with_new_hosts(hosts_dict: dict, new_hosts_dict: dict):
-    for key, val in new_hosts_dict.items():
-        if key in hosts_dict:
-            hosts_dict[key].update(val)
-        else:
-            hosts_dict[key] = val
 
 
 class Inventory:

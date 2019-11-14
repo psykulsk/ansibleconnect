@@ -6,7 +6,7 @@ import yaml
 import os
 from typing import Iterable, List
 
-from ansibleinviewer.host import Host
+from ansibleinviewer.ansiblehostadapter import AnsibleHostAdapter
 from ansibleinviewer.inventoryparser import Inventory
 
 logger = logging.getLogger(__name__)
@@ -22,20 +22,21 @@ def in_tmux() -> bool:
     return 'screen' in os.environ.get('TERM', '') and 'TMUX' in os.environ
 
 
-def create_tmux_script(hosts: List[Host], vertical_panes) -> str:
-    tmux_file_lines = [f"export PANE_WIDTH=$(expr $COLUMNS / {vertical_panes}) ; tmux new-session"]
+def create_tmux_script(hosts: List[AnsibleHostAdapter], vertical_panes) -> str:
+    tmux_file_lines = [
+        "export PANE_WIDTH=$(expr $COLUMNS / {}) ; tmux new-session".format(vertical_panes)]
     for index, host in enumerate(hosts):
-        tmux_file_lines.append(f"send-keys '{host.connection_command}' C-m")
+        tmux_file_lines.append("send-keys '{}' C-m".format(host.connection_command))
         if index == 0:
-            tmux_file_lines.append(f"split-window -v")
+            tmux_file_lines.append("split-window -v")
         elif index != len(hosts) - 1:
             if index < vertical_panes:
                 tmux_file_lines.append("select-pane -t 1")
             else:
-                tmux_file_lines.append(f"select-pane -t {vertical_panes+1}")
-            tmux_file_lines.append(f"split-window -h")
+                tmux_file_lines.append("select-pane -t {}".format(vertical_panes + 1))
+            tmux_file_lines.append("split-window -h")
     for index in range(len(hosts)):
-        tmux_file_lines.append(f"resizep -t {index} -x $PANE_WIDTH")
+        tmux_file_lines.append("resizep -t {} -x $PANE_WIDTH".format(index))
     tmux_script = " \\; ".join(tmux_file_lines)
     return tmux_script
 
@@ -107,8 +108,8 @@ def main():
     args = parse_arguments()
     groups, no_groups = parse_inventory_groups(args.groups)
     inventory = Inventory(args.inventory)
-    tmux_script = create_tmux_script(inventory.get_hosts(groups, no_groups),
-                                     args.vertical_panes)
+    filtered_hosts = [AnsibleHostAdapter(host) for host in inventory.get_hosts(groups, no_groups)]
+    tmux_script = create_tmux_script(filtered_hosts, args.vertical_panes)
     print(tmux_script)
 
 
