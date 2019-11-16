@@ -1,13 +1,15 @@
 #!/usr/bin/env python
 
 import argparse
+import datetime
 import logging
-import yaml
 import os
 from typing import Iterable, List
 
-from ansibleinviewer.host import Host
-from ansibleinviewer.inventoryparser import InventoryParser
+import yaml
+
+from ansibleinviewer.ansiblehostadapter import AnsibleHostAdapter
+from ansibleinviewer.inventoryadapter import InventoryAdapter
 
 logger = logging.getLogger(__name__)
 
@@ -19,23 +21,21 @@ def load_inventory_file(inventory_path: str) -> Iterable:
 
 
 def in_tmux() -> bool:
-    return 'screen' in os.environ.get('TERM', '') and 'TMUX' in os.environ
+    return 'TMUX' in os.environ
 
 
-def create_tmux_script(hosts: List[Host], vertical_panes) -> str:
-    tmux_file_lines = [f"export PANE_WIDTH=$(expr $COLUMNS / {vertical_panes}) ; tmux new-session"]
+def create_tmux_script(hosts: List[AnsibleHostAdapter]) -> str:
+    tmux_session_name = datetime.datetime.now().strftime("ansibleinviewer-%Y-%m-%d-%H-%M")
+    tmux_file_lines = [
+        "tmux new-session -s {}".format(tmux_session_name)]
     for index, host in enumerate(hosts):
-        tmux_file_lines.append(f"send-keys '{host.connection_command}' C-m")
+        tmux_file_lines.append("send-keys '{}' C-m".format(host.connection_command))
         if index == 0:
-            tmux_file_lines.append(f"split-window -v")
+            tmux_file_lines.append("split-window -v")
         elif index != len(hosts) - 1:
-            if index < vertical_panes:
-                tmux_file_lines.append("select-pane -t 1")
-            else:
-                tmux_file_lines.append(f"select-pane -t {vertical_panes+1}")
-            tmux_file_lines.append(f"split-window -h")
-    for index in range(len(hosts)):
-        tmux_file_lines.append(f"resizep -t {index} -x $PANE_WIDTH")
+            tmux_file_lines.append("split-window -h")
+    # tiled layout rearranges panes so that each pane has the same size
+    tmux_file_lines.append("select-layout tiled")
     tmux_script = " \\; ".join(tmux_file_lines)
     return tmux_script
 
@@ -90,13 +90,6 @@ def parse_arguments():
         default=None,
         help='Groups to connect with'
     )
-    parser.add_argument(
-        '-v',
-        '--vertical_panes',
-        default=2,
-        type=int,
-        help='Maximum number of tmux vertical panes'
-    )
     return parser.parse_args()
 
 
@@ -105,11 +98,10 @@ def main():
         print("echo 'Please exit current tmux session in order to use ansibleinviewer'")
         exit(1)
     args = parse_arguments()
-    inventory_data = load_inventory_file(args.inventory)
     groups, no_groups = parse_inventory_groups(args.groups)
-    inventory_parser = InventoryParser(inventory_data)
-    tmux_script = create_tmux_script(inventory_parser.get_hosts(groups, no_groups),
-                                     args.vertical_panes)
+    inventory = InventoryAdapter(args.inventory)
+    filtered_hosts = [AnsibleHostAdapter(host) for host in inventory.get_hosts(groups, no_groups)]
+    tmux_script = create_tmux_script(filtered_hosts)
     print(tmux_script)
 
 
