@@ -8,7 +8,7 @@ from ansible.parsing.dataloader import DataLoader
 logger = logging.getLogger(__name__)
 
 
-class Inventory:
+class InventoryAdapter:
     def __init__(self, inventory_path: str):
         self._inventory = InventoryManager(loader=DataLoader(), sources=inventory_path)
 
