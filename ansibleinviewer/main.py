@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 
-import argparse
 import datetime
 import logging
 import os
@@ -10,6 +9,7 @@ import yaml
 
 from ansibleinviewer.ansiblehostadapter import AnsibleHostAdapter
 from ansibleinviewer.inventoryadapter import InventoryAdapter
+from ansibleinviewer.parser import Parser
 
 logger = logging.getLogger(__name__)
 
@@ -96,6 +96,19 @@ def parse_arguments():
         default=None,
         help="Hostnames to connect with. Example: --hosts 'compute1,storage1'"
     )
+    parser.add_argument(
+        '-vars',
+        '--variables',
+        default=None,
+        help='Inventory variables to select hosts'
+    )
+    parser.add_argument(
+        '-novars',
+        '--no-variables',
+        default=None,
+        nargs='+',
+        help='Inventory variables to deselect hosts'
+    )
     return parser.parse_args()
 
 
@@ -103,6 +116,7 @@ def main():
     if in_tmux():
         print("echo 'Please exit current tmux session in order to use ansibleinviewer'")
         exit(1)
+<<<<<<< HEAD
     args = parse_arguments()
     hostnames = args.hosts.split(',') if args.hosts else []
     groups, no_groups = parse_inventory_groups(args.groups)
@@ -116,6 +130,12 @@ def main():
         exit(1)
     hosts_adapters = [AnsibleHostAdapter(host) for host in hosts_list]
     tmux_script = create_tmux_script(hosts_adapters)
+=======
+    parser = Parser()
+    inventory = InventoryAdapter(parser.inventory)
+    filtered_hosts = [AnsibleHostAdapter(host) for host in inventory.get_hosts(parser.groups, parser.no_groups, parser.variables, parser.no_variables)]
+    tmux_script = create_tmux_script(filtered_hosts)
+>>>>>>> initial idea
     print(tmux_script)
 
 
