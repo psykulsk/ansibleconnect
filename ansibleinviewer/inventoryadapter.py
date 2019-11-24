@@ -12,7 +12,7 @@ class InventoryAdapter:
     def __init__(self, inventory_path: str):
         self._inventory = InventoryManager(loader=DataLoader(), sources=inventory_path)
 
-    def get_hosts(self, groups=None, no_groups=None) -> List[Host]:
+    def get_hosts(self, groups=None, no_groups=None, variables=None, no_variables=None) -> List[Host]:
         output_hosts = set()
         if not no_groups:
             no_groups = []
