@@ -4,7 +4,6 @@ from setuptools import setup, find_packages
 def requirements(filename):
     with open(filename) as f:
         lines = f.read().splitlines()
-    print(lines)
     return lines
 
 
@@ -19,5 +18,4 @@ setup(
     [console_scripts]
     ansibleinviewer=ansibleinviewer.main:main
     '''
-
 )

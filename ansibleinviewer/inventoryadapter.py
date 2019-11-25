@@ -12,10 +12,8 @@ class InventoryAdapter:
     def __init__(self, inventory_path: str):
         self._inventory = InventoryManager(loader=DataLoader(), sources=inventory_path)
 
-    def get_hosts(self, groups=None, no_groups=None) -> List[Host]:
+    def get_hosts_by_group(self, groups: List[str], no_groups: List[str]) -> List[Host]:
         output_hosts = set()
-        if not no_groups:
-            no_groups = []
 
         if not groups:
             output_hosts.update(self._inventory.hosts.values())
@@ -28,4 +26,9 @@ class InventoryAdapter:
             no_group_data = self._inventory.groups[no_group]
             output_hosts.difference_update(no_group_data.hosts)
 
+        return list(output_hosts)
+
+    def get_hosts_by_names(self, hostnames: List[str]) -> List[Host]:
+        output_hosts = {self._inventory.hosts[hostname] for hostname in hostnames if
+                        hostname in self._inventory.hosts}
         return list(output_hosts)
