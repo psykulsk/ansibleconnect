@@ -1,5 +1,15 @@
 # Ansibleinviewer - Ansible Inventory Viewer 
-[![Build Status](https://travis-ci.com/psykulsk/ansibleinviewer.svg?branch=master)](https://travis-ci.com/psykulsk/ansibleinviewer)
+
+
+Ansible Version | CI Status
+---------|:---------
+2.5    | [![Ansible 2.5 Build Status](https://travis-ci.com/psykulsk/ansibleinviewer.svg?branch=master&&env=USED_ANSIBLE_VERSION=2.5)](https://travis-ci.com/psykulsk/ansibleinviewer)
+2.6    | [![Ansible 2.6 Build Status](https://travis-ci.com/psykulsk/ansibleinviewer.svg?branch=master&&env=USED_ANSIBLE_VERSION=2.6)](https://travis-ci.com/psykulsk/ansibleinviewer)
+2.7    | [![Ansible 2.7 Build Status](https://travis-ci.com/psykulsk/ansibleinviewer.svg?branch=master&&env=USED_ANSIBLE_VERSION=2.7)](https://travis-ci.com/psykulsk/ansibleinviewer)
+2.8    | [![Ansible 2.8 Build Status](https://travis-ci.com/psykulsk/ansibleinviewer.svg?branch=master&&env=USED_ANSIBLE_VERSION=2.8)](https://travis-ci.com/psykulsk/ansibleinviewer)
+2.9    | [![Ansible 2.9 Build Status](https://travis-ci.com/psykulsk/ansibleinviewer.svg?branch=master&&env=USED_ANSIBLE_VERSION=2.9)](https://travis-ci.com/psykulsk/ansibleinviewer)
+
+
 
 ## SSH into all hosts in your inventory with one command.
 
