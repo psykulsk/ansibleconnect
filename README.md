@@ -57,6 +57,7 @@ source <(ansibleinviewer -i inventory.yml -g '!group1')
 
 * `-i`, `--inventory` - Path to ansible inventory
 * `-g`, `--groups` - Inventory groups of hosts to connect to (multiple groups should be concentrated with *:*. *!* in front of group name means that ansibleinviewer should not connect to hosts form this group)
+* `--hosts` - List of hostnames to connect to. Example: `--hosts hostA,hostB`
 
 ### Authentication
 
