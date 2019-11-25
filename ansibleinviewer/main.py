@@ -4,7 +4,7 @@ import argparse
 import datetime
 import logging
 import os
-from typing import Iterable, List
+from typing import Iterable, List, Tuple
 
 import yaml
 
@@ -30,23 +30,22 @@ def create_tmux_script(hosts: List[AnsibleHostAdapter]) -> str:
         "tmux new-session -s {}".format(tmux_session_name)]
     for index, host in enumerate(hosts):
         tmux_file_lines.append("send-keys '{}' C-m".format(host.connection_command))
-        if index == 0:
-            tmux_file_lines.append("split-window -v")
-        elif index != len(hosts) - 1:
+        if index != len(hosts) - 1:
             tmux_file_lines.append("split-window -h")
     # tiled layout rearranges panes so that each pane has the same size
     tmux_file_lines.append("select-layout tiled")
+    # \; is printed so that ; can be interpreted by tmux instead of shell
     tmux_script = " \\; ".join(tmux_file_lines)
     return tmux_script
 
 
-def parse_inventory_groups(args_groups):
+def parse_inventory_groups(args_groups: str) -> Tuple[List[str], List[str]]:
     """Parse list of inventory groups passed via CLI
     Groups with indices like: 3, [3:], [:3] should be parsed into slices
     that later can be utilizes as list indices on inventory parsing
 
-    :param args_groups: List of strings with groups
-    :type args_groups: list
+    :param args_groups: String with a list of groups
+    :type args_groups: str
 
     :return: Two lists of:
                 * groups that should be selected
@@ -54,7 +53,7 @@ def parse_inventory_groups(args_groups):
     :rtype: list
     """
     if not args_groups:
-        return None, None
+        return [], []
     provided_groups = args_groups.split(':')
     groups = []
     no_groups = []
@@ -84,11 +83,18 @@ def parse_arguments():
         required=True,
         help='Path to the ansible inventory file'
     )
-    parser.add_argument(
+    group = parser.add_mutually_exclusive_group(required=False)
+    group.add_argument(
         '-g',
         '--groups',
         default=None,
-        help='Groups to connect with'
+        help="Groups to connect with.  Example: -g 'prod:!storage' translates to: "
+             "hosts in the prod group and not in the storage group."
+    )
+    group.add_argument(
+        '--hosts',
+        default=None,
+        help="Hostnames to connect with. Example: --hosts 'compute1,storage1'"
     )
     return parser.parse_args()
 
@@ -98,10 +104,18 @@ def main():
         print("echo 'Please exit current tmux session in order to use ansibleinviewer'")
         exit(1)
     args = parse_arguments()
+    hostnames = args.hosts.split(',') if args.hosts else []
     groups, no_groups = parse_inventory_groups(args.groups)
     inventory = InventoryAdapter(args.inventory)
-    filtered_hosts = [AnsibleHostAdapter(host) for host in inventory.get_hosts(groups, no_groups)]
-    tmux_script = create_tmux_script(filtered_hosts)
+    if args.hosts:
+        hosts_list = inventory.get_hosts_by_names(hostnames)
+    else:
+        hosts_list = inventory.get_hosts_by_group(groups, no_groups)
+    if not hosts_list:
+        print("echo 'No hosts matched given criteria'")
+        exit(1)
+    hosts_adapters = [AnsibleHostAdapter(host) for host in hosts_list]
+    tmux_script = create_tmux_script(hosts_adapters)
     print(tmux_script)
 
 

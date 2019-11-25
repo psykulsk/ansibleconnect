@@ -6,10 +6,10 @@ from ansibleinviewer.main import parse_inventory_groups
 
 class TestMain(unittest.TestCase):
 
-    def test_parse_inventory_groups_None(self):
+    def test_parse_inventory_groups_none(self):
         groups, no_groups = parse_inventory_groups(None)
-        self.assertEqual(None, groups)
-        self.assertEqual(None, no_groups)
+        self.assertEqual([], groups)
+        self.assertEqual([], no_groups)
 
     def test_parse_inventory_groups_single_group(self):
         groups, no_groups = parse_inventory_groups('test_group')

@@ -4,7 +4,6 @@ python:
   - "3.6"
   - "3.7"
   - "3.8"
-# command to install dependencies
 env:
   - USED_ANSIBLE_VERSION=2.5
   - USED_ANSIBLE_VERSION=2.6
@@ -12,9 +11,7 @@ env:
   - USED_ANSIBLE_VERSION=2.8
   - USED_ANSIBLE_VERSION=2.9
 install:
-  - pip install .
-  - pip install -r test_requirements.txt
+  - pip install tox
   - pip install --force-reinstall ansible==$USED_ANSIBLE_VERSION
-# command to run tests
 script:
-  - pytest
+  - tox
