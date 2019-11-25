@@ -6,9 +6,7 @@ env:
   - USED_ANSIBLE_VERSION=2.8
   - USED_ANSIBLE_VERSION=2.9
 install:
-  - pip install .
-  - pip install -r test_requirements.txt
-  - pip install --force-reinstall ansible==$USED_ANSIBLE_VERSION
+  - pip install tox
 # command to run tests
 script:
   - tox
