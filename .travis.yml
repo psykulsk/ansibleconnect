@@ -4,12 +4,13 @@ python:
   - "3.6"
   - "3.7"
   - "3.8"
-env:
-  - USED_ANSIBLE_VERSION=2.5
-  - USED_ANSIBLE_VERSION=2.6
-  - USED_ANSIBLE_VERSION=2.7
-  - USED_ANSIBLE_VERSION=2.8
-  - USED_ANSIBLE_VERSION=2.9
+jobs:
+  include:
+    - env: USED_ANSIBLE_VERSION=2.5
+    - env: USED_ANSIBLE_VERSION=2.6
+    - env: USED_ANSIBLE_VERSION=2.7
+    - env: USED_ANSIBLE_VERSION=2.8
+    - env: USED_ANSIBLE_VERSION=2.9
 install:
   - pip install tox
   - pip install --force-reinstall ansible==$USED_ANSIBLE_VERSION
