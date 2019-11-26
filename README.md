@@ -1,5 +1,7 @@
 # Ansibleinviewer - Ansible Inventory Viewer 
 
+Tested with Python >= 3.5
+
 
 Ansible Version | CI Status
 ---------|:---------
