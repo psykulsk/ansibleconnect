@@ -46,8 +46,3 @@ class InventoryAdapter:
         output_hosts = self._husk_groups(self._inventory._inventory.hosts, groups, no_groups)
         output_hosts = self._husk_variables(output_hosts, variables, no_variables)
         return list(output_hosts)
-
-if __name__ == '__main__':
-    inv = InventoryAdapter('/home/szymon/Documents/PythonScripts/ansibleinviewer/ansibleinviewer/tests/files/inventory.yml')
-    hosts = inv.get_hosts(variables=[('myname',)], no_variables=[('deploy', False)])
-    exit
