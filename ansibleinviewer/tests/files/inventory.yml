@@ -87,7 +87,7 @@ groupD:
       - 10.0.0.4
       - 192.168.0.3
       myname: Dhost2
-      deploy: true
+      deploy: false
       zones: *id001
       services: []
     192.168.0.3:
