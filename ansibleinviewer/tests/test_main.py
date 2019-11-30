@@ -33,7 +33,3 @@ class TestMain(unittest.TestCase):
         groups, no_groups = parse_inventory_groups(input_argument)
         self.assertListEqual(sorted(expected_groups), sorted(groups))
         self.assertListEqual(sorted(expected_no_groups), sorted(no_groups))
-
-    @parameterized.expand([
-        
-    ])
