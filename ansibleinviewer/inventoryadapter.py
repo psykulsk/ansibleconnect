@@ -56,6 +56,7 @@ class InventoryAdapter:
         output_hosts = self._husk_groups(self._inventory._inventory.hosts, groups, no_groups)
         output_hosts = self._husk_variables(output_hosts, variables, no_variables)
         return list(output_hosts)
+<<<<<<< HEAD
 
 <<<<<<< HEAD
     def get_hosts_by_names(self, hostnames: List[str]) -> List[Host]:
@@ -68,3 +69,5 @@ if __name__ == '__main__':
     hosts = inv.get_hosts(variables=[('myname',)], no_variables=[('deploy', False)])
     exit
 >>>>>>> First version of working logic
+=======
+>>>>>>> Modified idea
