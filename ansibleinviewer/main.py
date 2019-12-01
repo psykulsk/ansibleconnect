@@ -39,11 +39,81 @@ def create_tmux_script(hosts: List[AnsibleHostAdapter]) -> str:
     return tmux_script
 
 
+<<<<<<< HEAD
+=======
+def parse_inventory_groups(args_groups):
+    """Parse list of inventory groups passed via CLI
+    Groups with indices like: 3, [3:], [:3] should be parsed into slices
+    that later can be utilizes as list indices on inventory parsing
+
+    :param args_groups: List of strings with groups
+    :type args_groups: list
+
+    :return: Two lists of:
+                * groups that should be selected
+                * groups that should be ommited
+    :rtype: list
+    """
+    if not args_groups:
+        return None, None
+    provided_groups = args_groups.split(':')
+    groups = []
+    no_groups = []
+    for group in provided_groups:
+        if group.startswith('!'):
+            no_groups.append(group[1:])
+        else:
+            groups.append(group)
+    return groups, no_groups
+
+
+def parse_arguments():
+    description = '''
+    ansibleinviewer creates a shell command that sets up tmux layout and starts
+    an ssh session for each "sshable" host from the inventory in a separate pane.
+    Tmux available in PATH is required for this to work.
+
+    Example:
+    source <(inviewer -i inventory.yml)
+    '''
+
+    parser = argparse.ArgumentParser(description=description)
+
+    parser.add_argument(
+        '-i',
+        '--inventory',
+        required=True,
+        help='Path to the ansible inventory file'
+    )
+    parser.add_argument(
+        '-g',
+        '--groups',
+        default=None,
+        help='Groups to connect with'
+    )
+    parser.add_argument(
+        '-vars',
+        '--variables',
+        default=None,
+        help='Inventory variables to select hosts'
+    )
+    parser.add_argument(
+        '-novars',
+        '--no-variables',
+        default=None,
+        nargs='+',
+        help='Inventory variables to deselect hosts'
+    )
+    return parser.parse_args()
+
+
+>>>>>>> fea9e188f8ae4348a66a9497cc9922443de6e06a
 def main():
     if in_tmux():
         print("echo 'Please exit current tmux session in order to use ansibleinviewer'")
         exit(1)
     parser = Parser()
+<<<<<<< HEAD
     # hostnames = args.hosts.split(',') if args.hosts else []
     inventory = InventoryAdapter(parser.inventory)
     if parser.hosts:
@@ -59,6 +129,11 @@ def main():
                                                       parser.no_variables)
     hosts_adapters = [AnsibleHostAdapter(host) for host in hosts_list]
     tmux_script = create_tmux_script(hosts_adapters)
+=======
+    inventory = InventoryAdapter(parser.inventory)
+    filtered_hosts = [AnsibleHostAdapter(host) for host in inventory.get_hosts(parser.groups, parser.no_groups, parser.variables, parser.no_variables)]
+    tmux_script = create_tmux_script(filtered_hosts)
+>>>>>>> fea9e188f8ae4348a66a9497cc9922443de6e06a
     print(tmux_script)
 
 
