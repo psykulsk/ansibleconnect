@@ -1,7 +1,53 @@
+from parameterized import parameterized
 import unittest
 
 from ansibleinviewer.parser import Parser
 
 
 class TestParser(unittest.TestCase):
-    pass
+
+    def test_parse_inventory_groups_none(self):
+        groups, no_groups = Parser._parse_inventory_groups(None)
+        self.assertEqual(None, groups)
+        self.assertEqual(None, no_groups)
+
+    def test_parse_inventory_groups_single_group(self):
+        groups, no_groups = Parser._parse_inventory_groups('test_group')
+        self.assertListEqual(['test_group'], groups)
+        self.assertEqual([], no_groups)
+
+    def test_parse_inventory_groups_single_no_group(self):
+        groups, no_groups = Parser._parse_inventory_groups('!test_group')
+        self.assertListEqual(['test_group'], no_groups)
+        self.assertEqual([], groups)
+
+    @parameterized.expand([
+        ('group1:group2', ['group1', 'group2'], []),
+        ('group1:!group2', ['group1'], ['group2']),
+        ('!group1:group2', ['group2'], ['group1']),
+        ('!group1:!group2', [], ['group1', 'group2']),
+        ('group1:!group2:group3:!group4', ['group1', 'group3'], ['group2', 'group4'])
+    ])
+    def test_parse_inventory_groups_multi_group(self, input_argument,
+                                                expected_groups, expected_no_groups):
+        groups, no_groups = Parser._parse_inventory_groups(input_argument)
+        self.assertListEqual(sorted(expected_groups), sorted(groups))
+        self.assertListEqual(sorted(expected_no_groups), sorted(no_groups))
+
+    @parameterized.expand([
+        ('host1,host2,host3', ['host1', 'host2', 'host3']),
+        ('host1', ['host1']),
+        (None, [])
+    ])
+    def test_parse_hostnames(self, test_arg, expected_output):
+        hostnames = sorted(Parser._parse_hostnames(test_arg))
+        self.assertListEqual(hostnames, sorted(expected_output))
+
+    @parameterized.expand([
+        (['var1:val1', 'var2:val2'], [('var1', 'val1'), ('var2', 'val2')]),
+        (['var1', 'var2'], [('var1',), ('var2',)]),
+        (['var1:val1', 'var2'], [('var1', 'val1'), ('var2',)])
+    ])
+    def test_parse_vars(self, test_arg, expected_output):
+        variables = sorted(Parser._parse_vars(test_arg))
+        self.assertEqual(variables, sorted(expected_output))
