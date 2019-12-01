@@ -1,14 +1,10 @@
-<<<<<<< HEAD
 from parameterized import parameterized
-=======
->>>>>>> fea9e188f8ae4348a66a9497cc9922443de6e06a
 import unittest
 
 from ansibleinviewer.parser import Parser
 
 
 class TestParser(unittest.TestCase):
-<<<<<<< HEAD
 
     def test_parse_inventory_groups_none(self):
         groups, no_groups = Parser._parse_inventory_groups(None)
@@ -55,6 +51,3 @@ class TestParser(unittest.TestCase):
     def test_parse_vars(self, test_arg, expected_output):
         variables = sorted(Parser._parse_vars(test_arg))
         self.assertEqual(variables, sorted(expected_output))
-=======
-    pass
->>>>>>> fea9e188f8ae4348a66a9497cc9922443de6e06a
