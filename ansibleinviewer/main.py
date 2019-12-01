@@ -45,7 +45,7 @@ def main():
         exit(1)
     parser = Parser()
     inventory = InventoryAdapter(parser.inventory)
-    if parser.hosts:
+    if parser.hostnames:
         hosts_list = inventory.get_hosts_by_names(parser.hostnames)
     else:
         hosts_list = inventory.get_hosts_by_group(parser.groups, parser.no_groups)

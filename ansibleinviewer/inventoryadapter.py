@@ -33,9 +33,8 @@ class InventoryAdapter:
                         hostname in self._inventory.hosts}
         return list(output_hosts)
 
-    def get_hosts_by_variables(self, hosts=None, variables=None, no_variables=None) -> List[Host]:
-        if not hosts:
-            hosts = self._inventory.hosts.values()
+    def get_hosts_by_variables(self, hosts: List,
+                               variables: List, no_variables: List) -> List[Host]:
         output_hosts = []
         if not no_variables:
             no_variables = []

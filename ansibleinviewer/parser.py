@@ -7,6 +7,7 @@ class Parser:
     def __init__(self):
         self._groups = None
         self._no_groups = None
+        self._hostnames = None
         self._variables = None
         self._no_variables = None
         self._parser = argparse.ArgumentParser()
@@ -25,7 +26,7 @@ class Parser:
             default=None,
             help='Groups to connect with'
         )
-        self._group.add_argument(
+        self._parser.add_argument(
             '--hosts',
             default=None,
             help="Hostnames to connect with. Example: --hosts 'compute1,storage1'"
@@ -71,7 +72,7 @@ class Parser:
         :rtype: list
         """
         if not args_groups:
-            return None, None
+            return [], []
         provided_groups = args_groups.split(':')
         groups = []
         no_groups = []
@@ -104,6 +105,8 @@ class Parser:
         """
         if not variables:
             return None
+        if not isinstance(variables, list):
+            variables = [variables]
         parsed_variables = []
         for variable in variables:
             if ':' in variable:
@@ -115,13 +118,13 @@ class Parser:
     @property
     def groups(self):
         if not self._groups:
-            self._groups, self._no_groups = self._parse_inventory_groups(self.args.args_groups)
+            self._groups, self._no_groups = self._parse_inventory_groups(self.args.groups)
         return self._groups
 
     @property
     def no_groups(self):
         if not self._no_groups:
-            self._groups, self._no_groups = self._parse_inventory_groups(self.args.args_groups)
+            self._groups, self._no_groups = self._parse_inventory_groups(self.args.groups)
         return self._no_groups
 
     @property

@@ -11,6 +11,7 @@ TEST_INVENTORY_FILE = os.path.join(TEST_DATA_DIR, 'inventory.yml')
 class TestInventoryAdapter(unittest.TestCase):
     def setUp(self) -> None:
         self.inventory_adapter = InventoryAdapter(TEST_INVENTORY_FILE)
+        self.all_hosts = self.inventory_adapter._inventory.hosts.values()
 
     def test_get_hosts_by_group_returns_all_hosts_when_empty_lists_are_given(self):
         output_hosts = self.inventory_adapter.get_hosts_by_group([], [])
@@ -27,7 +28,9 @@ class TestInventoryAdapter(unittest.TestCase):
         self.assertEqual(3, len(output_hosts))
 
     def test_get_hosts_by_variables_empty_vars_no_vars(self):
-        output_hosts = self.inventory_adapter.get_hosts_by_variables()
+        output_hosts = self.inventory_adapter.get_hosts_by_variables(hosts=self.all_hosts,
+                                                                     variables=[],
+                                                                     no_variables=[])
         self.assertEqual(8, len(output_hosts))
 
     @parameterized.expand([
@@ -36,7 +39,9 @@ class TestInventoryAdapter(unittest.TestCase):
         ([('myname', 'Dhost1'), ('hostvar',)], 4)
     ])
     def test_get_hosts_by_variables_non_empty_vars_empty_no_vars(self, test_arg, expected_len):
-        output_hosts = self.inventory_adapter.get_hosts_by_variables(variables=test_arg)
+        output_hosts = self.inventory_adapter.get_hosts_by_variables(hosts=self.all_hosts,
+                                                                     variables=test_arg,
+                                                                     no_variables=[])
         self.assertEqual(expected_len, len(output_hosts))
 
     @parameterized.expand([
@@ -45,7 +50,9 @@ class TestInventoryAdapter(unittest.TestCase):
         ([('myname', 'Dhost1'), ('hostvar',)], 4)
     ])
     def test_get_hosts_by_variables_empty_vars_non_empty_no_vars(self, test_arg, expected_len):
-        output_hosts = self.inventory_adapter.get_hosts_by_variables(no_variables=test_arg)
+        output_hosts = self.inventory_adapter.get_hosts_by_variables(hosts=self.all_hosts,
+                                                                     variables=[],
+                                                                     no_variables=test_arg)
         self.assertEqual(expected_len, len(output_hosts))
 
     @parameterized.expand([
@@ -53,6 +60,7 @@ class TestInventoryAdapter(unittest.TestCase):
         ([('hostvar',)], [('hostvar', 'test')], 1)
     ])
     def test_get_hosts_by_variables_non_empty_vars_no_vars(self, var, no_var, expected_len):
-        output_hosts = self.inventory_adapter.get_hosts_by_variables(variables=var,
+        output_hosts = self.inventory_adapter.get_hosts_by_variables(hosts=self.all_hosts,
+                                                                     variables=var,
                                                                      no_variables=no_var)
         self.assertEqual(expected_len, len(output_hosts))

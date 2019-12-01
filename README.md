@@ -66,7 +66,7 @@ source <(ansibleinviewer -i inventory.yml -vars provider:aws)>
 * `-g`, `--groups` - Inventory groups of hosts to connect to (multiple groups should be concentrated with *:*. *!* in front of group name means that ansibleinviewer should not connect to hosts form this group)
 * `--hosts` - List of hostnames to connect to. Example: `--hosts hostA,hostB`
 * `-vars`, `--variables` - Variables that host should have defined in inventory to connect to it. Accepted format: *key:value* in case where host should have variable with specific value or *key* in case where host should have defined variable no matter what value.
-* `-nvars`, `--no-variables` - Variables that host should not have defined in inventory to connect to it. Accepted format: *key:value* in case where host should not have variable with specific value or *key* in case where host should not have defined variable no matter what value.
+* `-novars`, `--no-variables` - Variables that host should not have defined in inventory to connect to it. Accepted format: *key:value* in case where host should not have variable with specific value or *key* in case where host should not have defined variable no matter what value.
 
 
 ### Authentication

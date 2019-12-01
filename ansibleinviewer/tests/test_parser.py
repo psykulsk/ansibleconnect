@@ -8,8 +8,8 @@ class TestParser(unittest.TestCase):
 
     def test_parse_inventory_groups_none(self):
         groups, no_groups = Parser._parse_inventory_groups(None)
-        self.assertEqual(None, groups)
-        self.assertEqual(None, no_groups)
+        self.assertEqual([], groups)
+        self.assertEqual([], no_groups)
 
     def test_parse_inventory_groups_single_group(self):
         groups, no_groups = Parser._parse_inventory_groups('test_group')
