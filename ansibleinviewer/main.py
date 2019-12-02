@@ -9,8 +9,10 @@ import yaml
 
 from ansibleinviewer.ansiblehostadapter import AnsibleHostAdapter
 from ansibleinviewer.inventoryadapter import InventoryAdapter
-from ansibleinviewer.parser import Parser
-
+from ansibleinviewer.parser import parse_arguments, \
+                                   parse_hostnames, \
+                                   parse_inventory_groups, \
+                                   parse_vars
 logger = logging.getLogger(__name__)
 
 
@@ -43,19 +45,23 @@ def main():
     if in_tmux():
         print("echo 'Please exit current tmux session in order to use ansibleinviewer'")
         exit(1)
-    parser = Parser()
-    inventory = InventoryAdapter(parser.inventory)
-    if parser.hostnames:
-        hosts_list = inventory.get_hosts_by_names(parser.hostnames)
+    args = parse_arguments()
+    inventory = InventoryAdapter(args.inventory)
+    hostnames = parse_hostnames(args.hosts)
+    groups, no_groups = parse_inventory_groups(args.groups)
+    if hostnames:
+        hosts_list = inventory.get_hosts_by_names(hostnames)
     else:
-        hosts_list = inventory.get_hosts_by_group(parser.groups, parser.no_groups)
+        hosts_list = inventory.get_hosts_by_group(groups, no_groups)
     if not hosts_list:
         print("echo 'No hosts matched given criteria'")
         exit(1)
-    if parser.variables or parser.no_variables:
+    variables = parse_vars(args.variables)
+    no_variables = parse_vars(args.no_variables)
+    if variables or no_variables:
         hosts_list = inventory.get_hosts_by_variables(hosts_list,
-                                                      parser.variables,
-                                                      parser.no_variables)
+                                                      variables,
+                                                      no_variables)
     hosts_adapters = [AnsibleHostAdapter(host) for host in hosts_list]
     tmux_script = create_tmux_script(hosts_adapters)
     print(tmux_script)
