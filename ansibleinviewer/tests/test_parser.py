@@ -1,10 +1,12 @@
 from parameterized import parameterized
 import unittest
 
-from ansibleinviewer.main import parse_inventory_groups
+from ansibleinviewer.parser import parse_hostnames, \
+                                   parse_inventory_groups, \
+                                   parse_vars
 
 
-class TestMain(unittest.TestCase):
+class TestParser(unittest.TestCase):
 
     def test_parse_inventory_groups_none(self):
         groups, no_groups = parse_inventory_groups(None)
@@ -33,3 +35,21 @@ class TestMain(unittest.TestCase):
         groups, no_groups = parse_inventory_groups(input_argument)
         self.assertListEqual(sorted(expected_groups), sorted(groups))
         self.assertListEqual(sorted(expected_no_groups), sorted(no_groups))
+
+    @parameterized.expand([
+        ('host1,host2,host3', ['host1', 'host2', 'host3']),
+        ('host1', ['host1']),
+        (None, [])
+    ])
+    def test_parse_hostnames(self, test_arg, expected_output):
+        hostnames = sorted(parse_hostnames(test_arg))
+        self.assertListEqual(hostnames, sorted(expected_output))
+
+    @parameterized.expand([
+        (['var1:val1', 'var2:val2'], [('var1', 'val1'), ('var2', 'val2')]),
+        (['var1', 'var2'], [('var1', None), ('var2', None)]),
+        (['var1:val1', 'var2'], [('var1', 'val1'), ('var2', None)])
+    ])
+    def test_parse_vars(self, test_arg, expected_output):
+        variables = sorted(parse_vars(test_arg))
+        self.assertEqual(variables, sorted(expected_output))
