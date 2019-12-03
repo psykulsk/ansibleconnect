@@ -35,8 +35,8 @@ class TestInventoryAdapter(unittest.TestCase):
 
     @parameterized.expand([
         ([('deploy', True)], 2),
-        ([('myname',)], 3),
-        ([('myname', 'Dhost1'), ('hostvar',)], 4)
+        ([('myname', None)], 3),
+        ([('myname', 'Dhost1'), ('hostvar', None)], 4)
     ])
     def test_get_hosts_by_variables_non_empty_vars_empty_no_vars(self, test_arg, expected_len):
         output_hosts = self.inventory_adapter.get_hosts_by_variables(hosts=self.all_hosts,
@@ -46,8 +46,8 @@ class TestInventoryAdapter(unittest.TestCase):
 
     @parameterized.expand([
         ([('deploy', True)], 6),
-        ([('myname',)], 5),
-        ([('myname', 'Dhost1'), ('hostvar',)], 4)
+        ([('myname', None)], 5),
+        ([('myname', 'Dhost1'), ('hostvar', None)], 4)
     ])
     def test_get_hosts_by_variables_empty_vars_non_empty_no_vars(self, test_arg, expected_len):
         output_hosts = self.inventory_adapter.get_hosts_by_variables(hosts=self.all_hosts,
@@ -57,7 +57,7 @@ class TestInventoryAdapter(unittest.TestCase):
 
     @parameterized.expand([
         ([('deploy', True)], [('myname', 'Dhost1')], 1),
-        ([('hostvar',)], [('hostvar', 'test')], 1)
+        ([('hostvar', None)], [('hostvar', 'test')], 1)
     ])
     def test_get_hosts_by_variables_non_empty_vars_no_vars(self, var, no_var, expected_len):
         output_hosts = self.inventory_adapter.get_hosts_by_variables(hosts=self.all_hosts,

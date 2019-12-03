@@ -96,5 +96,5 @@ def parse_vars(variables: List[str]) -> List[Tuple]:
         if ':' in variable:
             parsed_variables.append(tuple(variable.split(':')))
         else:
-            parsed_variables.append((variable,))
+            parsed_variables.append((variable, None))
     return parsed_variables

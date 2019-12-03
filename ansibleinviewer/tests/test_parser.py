@@ -47,8 +47,8 @@ class TestParser(unittest.TestCase):
 
     @parameterized.expand([
         (['var1:val1', 'var2:val2'], [('var1', 'val1'), ('var2', 'val2')]),
-        (['var1', 'var2'], [('var1',), ('var2',)]),
-        (['var1:val1', 'var2'], [('var1', 'val1'), ('var2',)])
+        (['var1', 'var2'], [('var1', None), ('var2', None)]),
+        (['var1:val1', 'var2'], [('var1', 'val1'), ('var2', None)])
     ])
     def test_parse_vars(self, test_arg, expected_output):
         variables = sorted(parse_vars(test_arg))
