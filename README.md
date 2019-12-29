@@ -1,7 +1,5 @@
 # Ansibleconnect - connect to all hosts from the inventory with one command
 
-Tested with Python >= 3.5
-
 
 Ansible Version | CI Status
 ---------|:---------
@@ -12,10 +10,7 @@ Ansible Version | CI Status
 2.9    | [![Ansible 2.9 Build Status](https://travis-ci.com/psykulsk/ansibleconnect.svg?branch=master&&env=USED_ANSIBLE_VERSION=2.9)](https://travis-ci.com/psykulsk/ansibleconnect)
 
 
-
 ## SSH into all hosts in your inventory with one command.
-
-
 
 Ansibleconnect creates a bash script based on your ansible inventory.
 That script will create a new tmux session and create a separate pane
@@ -28,9 +23,7 @@ panes an ssh connection to the pane's host will be established.
 ```
 sudo apt install tmux
 sudo apt install sshpass
-git clone https://github.com/psykulsk/ansibleconnect.git
-cd ansibleconnect
-python3 -m pip install .
+pip install ansibleconnect
 ```
 
 ### Usage examples:
