@@ -8,7 +8,7 @@ def requirements(filename):
 
 
 setup(
-    name='ansibleinviewer',
+    name='ansibleconnect',
     version='0.1',
     author='Piotr Sykulski',
     author_email='pitersk@gmail.com',
@@ -16,6 +16,6 @@ setup(
     packages=find_packages(),
     entry_points='''
     [console_scripts]
-    ansibleinviewer=ansibleinviewer.main:main
+    ansibleconnect=ansibleconnect.main:main
     '''
 )

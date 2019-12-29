@@ -2,7 +2,7 @@ from parameterized import parameterized
 import unittest
 import os
 
-from ansibleinviewer.inventoryadapter import InventoryAdapter
+from ansibleconnect.inventoryadapter import InventoryAdapter
 
 TEST_DATA_DIR = os.path.join(os.path.dirname(__file__), 'files')
 TEST_INVENTORY_FILE = os.path.join(TEST_DATA_DIR, 'inventory.yml')

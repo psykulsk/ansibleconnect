@@ -1,7 +1,7 @@
 from parameterized import parameterized
 import unittest
 
-from ansibleinviewer.parser import parse_hostnames, \
+from ansibleconnect.parser import parse_hostnames, \
                                    parse_inventory_groups, \
                                    parse_vars
 

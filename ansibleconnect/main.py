@@ -7,9 +7,9 @@ from typing import Iterable, List
 
 import yaml
 
-from ansibleinviewer.ansiblehostadapter import AnsibleHostAdapter
-from ansibleinviewer.inventoryadapter import InventoryAdapter
-from ansibleinviewer.parser import parse_arguments, \
+from ansibleconnect.ansiblehostadapter import AnsibleHostAdapter
+from ansibleconnect.inventoryadapter import InventoryAdapter
+from ansibleconnect.parser import parse_arguments, \
                                    parse_hostnames, \
                                    parse_inventory_groups, \
                                    parse_vars
@@ -27,7 +27,7 @@ def in_tmux() -> bool:
 
 
 def create_tmux_script(hosts: List[AnsibleHostAdapter]) -> str:
-    tmux_session_name = datetime.datetime.now().strftime("ansibleinviewer-%Y-%m-%d-%H-%M")
+    tmux_session_name = datetime.datetime.now().strftime("ansibleconnect-%Y-%m-%d-%H-%M")
     tmux_file_lines = [
         "tmux new-session -s {}".format(tmux_session_name)]
     for index, host in enumerate(hosts):
@@ -43,7 +43,7 @@ def create_tmux_script(hosts: List[AnsibleHostAdapter]) -> str:
 
 def main():
     if in_tmux():
-        print("echo 'Please exit current tmux session in order to use ansibleinviewer'")
+        print("echo 'Please exit current tmux session in order to use ansibleconnect'")
         exit(1)
     args = parse_arguments()
     inventory = InventoryAdapter(args.inventory)
