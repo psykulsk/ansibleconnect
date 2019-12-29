@@ -14,4 +14,4 @@ install:
   - pip install --force-reinstall ansible==$USED_ANSIBLE_VERSION
 script:
   - tox
-  - ansibleinviewer -i ansibleinviewer/tests/files/inventory.yml
+  - ansibleconnect -i tests/files/inventory.yml
