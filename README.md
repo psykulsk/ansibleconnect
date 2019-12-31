@@ -53,6 +53,11 @@ Connect to all hosts that have AWS provider:
 source <(ansibleconnect -i inventory.yml -vars provider:aws)>
 ```
 
+**NOTE:** In case you don't use bash. You can also use *eval* command, for example:
+```
+eval "$(ansibleconnect -i inventories/inventory.yml)"
+```
+
 #### Possible flags
 
 * `-i`, `--inventory` - Path to ansible inventory
