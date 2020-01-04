@@ -1,5 +1,5 @@
 import logging
-from typing import List, Set
+from typing import List
 
 from ansible.inventory.host import Host  # type: ignore
 from ansible.inventory.manager import InventoryManager  # type: ignore
@@ -13,7 +13,7 @@ class InventoryAdapter:
         self._inventory = InventoryManager(loader=DataLoader(), sources=inventory_path)
 
     def get_hosts_by_group(self, groups: List[str], no_groups: List[str]) -> List[Host]:
-        output_hosts: Set[Host] = set()
+        output_hosts = set()  # type: ignore
 
         if not groups:
             output_hosts.update(self._inventory.hosts.values())
