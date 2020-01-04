@@ -47,18 +47,23 @@ class SSHConnectionCommand(ConnectionCommand):
     def _get_ssh_options(self):
         ssh_options = ' '.join([self.ssh_args, self.ssh_extra_args, self.ssh_common_args])
         if self.ssh_private_key_file:
-            ssh_options += f' -i {self.ssh_private_key_file}'
+            ssh_options += ' -i {}'.format(self.ssh_private_key_file)
         if not self.host_key_checking:
             ssh_options += ' -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no'
         if self.port:
-            ssh_options += f' -p {self.port}'
+            ssh_options += ' -p {}'.format(self.port)
         return ssh_options
 
     def __str__(self):
         ssh_command = ''
         if self.password and self.password != ANSIBLE_NULL_VALUE:
-            ssh_command += f'sshpass -p "{self.password}"'
-        ssh_command += f' {self.ssh_executable} {self._get_ssh_options()} {self.user}@{self.host}'
+            ssh_command += 'sshpass -p "{}"'.format(self.password)
+        ssh_command += ' {ssh_exec} {ssh_options} {user}@{host}'.format(
+            ssh_exec=self.ssh_executable,
+            ssh_options=self._get_ssh_options(),
+            user=self.user,
+            host=self.host
+        )
         return ssh_command
 
 
