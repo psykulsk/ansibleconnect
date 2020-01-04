@@ -1,5 +1,5 @@
 import argparse
-from typing import List, Tuple
+from typing import List, Tuple, no_type_check
 
 
 def parse_arguments():
@@ -48,7 +48,7 @@ def parse_hostnames(hosts: str) -> List[str]:
     return hosts.split(',') if hosts else []
 
 
-def parse_inventory_groups(args_groups: List[str]) -> (List[str], List[str]):
+def parse_inventory_groups(args_groups: str) -> Tuple[List[str], List[str]]:
     """Parse list of inventory groups passed via CLI
     Groups with indices like: 3, [3:], [:3] should be parsed into slices
     that later can be utilizes as list indices on inventory parsing
@@ -74,7 +74,8 @@ def parse_inventory_groups(args_groups: List[str]) -> (List[str], List[str]):
     return groups, no_groups
 
 
-def parse_vars(variables: List[str]) -> List[Tuple]:
+@no_type_check
+def parse_vars(variables):
     """Parse variables passed as args to list of tuples
     If variable has required value then
     it'll be appended in format (key, value).
@@ -91,6 +92,7 @@ def parse_vars(variables: List[str]) -> List[Tuple]:
         return None
     if not isinstance(variables, list):
         variables = [variables]
+
     parsed_variables = []
     for variable in variables:
         if ':' in variable:
