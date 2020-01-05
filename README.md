@@ -72,14 +72,14 @@ eval "$(ansibleconnect -i inventories/inventory.yml)"
 
 #### ssh-agent
 
-For authentication one can use ssh keys. `ansibleconnect` will scan the inventory file for connection options (`ansible_ssh_common_args`, `ansible_ssh_user`, `ansible_host`). Ssh keys can be passed via them. Otherwise, one can use the `ssh-agent` tool. Environment args (`SSH_AGENT_PID` and `SSH_AUTH_SOCK`) will be passed to each one of the tmux shells.
+For authentication one can use ssh keys. `ansibleconnect` will scan the inventory file for connection options (`ansible_ssh_common_args`, `ansible_ssh_user`, `ansible_host`, `ansible_private_key_file`, etc.). Ssh keys can be passed via them. Otherwise, one can use the `ssh-agent` tool. Environment args (`SSH_AGENT_PID` and `SSH_AUTH_SOCK`) will be passed to each one of the tmux shells.
 
 ##### ssh-agent setup example
 ```
 eval $(ssh-agent)
-ssh-add ~/.ssh/my_private_key\
+ssh-add ~/.ssh/my_private_key.pem
 ```
 
 #### sshpass
 
-If `ansible_ssh_pass` variable is used in the inventory, one should installl the `sshpass` and make it discoverable via `PATH`. Please note that when using the sshpass, password will passed in plaintext and it will be saved in each of the tmux shells' history.
+If `ansible_ssh_pass` variable is used in the inventory, one should install the `sshpass` and make it discoverable via `PATH`. Please note that when using the sshpass, password will passed in plaintext and it will be saved in each of the tmux shells' history.
