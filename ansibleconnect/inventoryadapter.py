@@ -1,9 +1,9 @@
 import logging
 from typing import List
 
-from ansible.inventory.host import Host
-from ansible.inventory.manager import InventoryManager
-from ansible.parsing.dataloader import DataLoader
+from ansible.inventory.host import Host  # type: ignore
+from ansible.inventory.manager import InventoryManager  # type: ignore
+from ansible.parsing.dataloader import DataLoader  # type: ignore
 
 logger = logging.getLogger(__name__)
 
@@ -13,7 +13,7 @@ class InventoryAdapter:
         self._inventory = InventoryManager(loader=DataLoader(), sources=inventory_path)
 
     def get_hosts_by_group(self, groups: List[str], no_groups: List[str]) -> List[Host]:
-        output_hosts = set()
+        output_hosts = set()  # type: ignore
 
         if not groups:
             output_hosts.update(self._inventory.hosts.values())
@@ -45,13 +45,13 @@ class InventoryAdapter:
             for host in hosts:
                 if any(var in host.get_vars().items()
                        for var in variables) or \
-                   any(var[0] in host.get_vars().keys()
-                       for var in variables if not var[1]):
+                        any(var[0] in host.get_vars().keys()
+                            for var in variables if not var[1]):
                     variable_husked_hosts.append(host)
         for host in variable_husked_hosts:
             if not any(nvar in host.get_vars().items()
                        for nvar in no_variables) and \
-               not any(nvar[0] in host.get_vars().keys()
-                       for nvar in no_variables if not nvar[1]):
+                    not any(nvar[0] in host.get_vars().keys()
+                            for nvar in no_variables if not nvar[1]):
                 output_hosts.append(host)
         return output_hosts
