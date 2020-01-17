@@ -13,7 +13,7 @@ Ansible Version | CI Status
 ## SSH into all hosts in your inventory with one command.
 
 Ansibleconnect creates a bash script based on your ansible inventory.
-That script will create a new tmux session and create a separate pane
+That script will create a new tmux window or session and create a separate pane
 for each one of your 'sshable' inventory hosts. Inside of each of the
 panes an ssh connection to the pane's host will be established.
 
