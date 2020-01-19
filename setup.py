@@ -14,7 +14,7 @@ def requirements(filename):
 
 setup(
     name='ansibleconnect',
-    version='1.0.1',
+    version='1.0.2',
     description='Connect to all hosts from the ansible inventory with one command',
     long_description=README,
     long_description_content_type="text/markdown",

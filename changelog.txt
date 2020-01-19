@@ -1,0 +1,18 @@
+# ansibleconnect changelog
+
+## 1.0.2
+
+2020-01-19
+
+### What's new
+
+ - Support for the case when ssh connection info is held in the ssh config file instead
+   of the inventory file
+
+## 1.0.1
+
+2020-01-18
+
+### What's new
+
+ - Running ansibleconnect from inside a tmux session creates a new tmux window
