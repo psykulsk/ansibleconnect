@@ -40,7 +40,7 @@ class TestSSHConnectionCommand(unittest.TestCase):
         test_host_vars = {
             'ansible_ssh_private_key_file': 'test/file.pem'
         }
-        test_ssh_connection_command = SSHConnectionCommand(test_host_vars)
+        test_ssh_connection_command = SSHConnectionCommand('test_hostname', test_host_vars)
         result_ssh_options = test_ssh_connection_command._get_ssh_options()
         expected_private_key_option = '-i test/file.pem'
         self.assertIn(expected_private_key_option, result_ssh_options)
@@ -49,13 +49,13 @@ class TestSSHConnectionCommand(unittest.TestCase):
         test_host_vars = {
             'ansible_ssh_private_key_file': ''
         }
-        test_ssh_connection_command = SSHConnectionCommand(test_host_vars)
+        test_ssh_connection_command = SSHConnectionCommand('test_hostname', test_host_vars)
         result_ssh_options = test_ssh_connection_command._get_ssh_options()
         self.assertNotIn('-i', result_ssh_options)
 
     def test_get_ssh_options_no_options_for_no_host_key_checking_when_it_is_not_selected(self):
         test_host_vars = {}
-        test_ssh_connection_command = SSHConnectionCommand(test_host_vars)
+        test_ssh_connection_command = SSHConnectionCommand('test_hostname', test_host_vars)
         result_ssh_options = test_ssh_connection_command._get_ssh_options()
         self.assertNotIn('-o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no',
                          result_ssh_options)
@@ -64,7 +64,7 @@ class TestSSHConnectionCommand(unittest.TestCase):
         test_host_vars = {
             'ansible_host_key_checking': False
         }
-        test_ssh_connection_command = SSHConnectionCommand(test_host_vars)
+        test_ssh_connection_command = SSHConnectionCommand('test_hostname', test_host_vars)
         result_ssh_options = test_ssh_connection_command._get_ssh_options()
         self.assertIn('-o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no',
                       result_ssh_options)
@@ -73,13 +73,13 @@ class TestSSHConnectionCommand(unittest.TestCase):
         test_host_vars = {
             'ansible_port': '2222'
         }
-        test_ssh_connection_command = SSHConnectionCommand(test_host_vars)
+        test_ssh_connection_command = SSHConnectionCommand('test_hostname', test_host_vars)
         result_ssh_options = test_ssh_connection_command._get_ssh_options()
         self.assertIn('-p 2222', result_ssh_options)
 
     def test_get_ssh_options_no_port_flag_when_port_variable_is_not_set(self):
         test_host_vars = {}
-        test_ssh_connection_command = SSHConnectionCommand(test_host_vars)
+        test_ssh_connection_command = SSHConnectionCommand('test_hostname', test_host_vars)
         result_ssh_options = test_ssh_connection_command._get_ssh_options()
         self.assertNotIn('-p 2222', result_ssh_options)
 
@@ -87,10 +87,23 @@ class TestSSHConnectionCommand(unittest.TestCase):
         test_host_vars = {
             'ansible_password': 'testpass'
         }
-        test_ssh_connection_command = SSHConnectionCommand(test_host_vars)
+        test_ssh_connection_command = SSHConnectionCommand('test_hostname', test_host_vars)
         self.assertIn('sshpass -p "testpass"', str(test_ssh_connection_command))
 
     def test_str_sshpass_not_used_when_password_option_not_present(self):
         test_host_vars = {}
-        test_ssh_connection_command = SSHConnectionCommand(test_host_vars)
+        test_ssh_connection_command = SSHConnectionCommand('test_hostname', test_host_vars)
         self.assertNotIn('sshpass', str(test_ssh_connection_command))
+
+    def test_user_and_ansible_host_is_used_when_ansible_host_is_defined(self):
+        test_host_vars = {
+            'ansible_host': 'test_host',
+            'ansible_user': 'test_user'
+        }
+        test_ssh_connection_command = SSHConnectionCommand('test_hostname', test_host_vars)
+        self.assertIn('test_user@test_host', str(test_ssh_connection_command))
+
+    def test_inventory_host_name_is_used_when_ansible_host_is_not_defined(self):
+        test_host_vars = {}
+        test_ssh_connection_command = SSHConnectionCommand('test_hostname', test_host_vars)
+        self.assertIn('test_hostname', str(test_ssh_connection_command))

@@ -10,4 +10,5 @@ class AnsibleHostAdapter:
 
     @property
     def connection_command(self):
-        return str(CONNECTION_COMMAND2CLASS_MAP[self._connection_plugin](self._host.vars))
+        return str(
+            CONNECTION_COMMAND2CLASS_MAP[self._connection_plugin](self._host.name, self._host.vars))

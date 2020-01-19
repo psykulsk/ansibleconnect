@@ -9,7 +9,8 @@ def get_first_from_list_or_default(dictionary: dict, key_list: list, default_val
 
 
 class ConnectionCommand:
-    def __init__(self, host_variables: dict):
+    def __init__(self, host_name, host_variables: dict):
+        self.host_name = host_name
         self.host = host_variables.get('ansible_host', None)
         self.user = host_variables.get('ansible_user', 'root')
         self.port = host_variables.get('ansible_port', 22)
@@ -26,8 +27,8 @@ class SSHConnectionCommand(ConnectionCommand):
     SSH_PRIVATE_KEY_FILE_KEYS = ['ansible_ssh_private_key_file', 'ansible_private_key_file']
     SSH_USER_KEYS = ['ansible_ssh_user', 'ansible_user']
 
-    def __init__(self, host_variables: dict):
-        super().__init__(host_variables)
+    def __init__(self, host_name, host_variables: dict):
+        super().__init__(host_name, host_variables)
         self.host = get_first_from_list_or_default(host_variables, self.SSH_HOST_KEYS, None)
         self.host_key_checking = get_first_from_list_or_default(host_variables,
                                                                 self.SSH_HOST_KEY_CHECKING_KEYS,
@@ -44,6 +45,15 @@ class SSHConnectionCommand(ConnectionCommand):
         self.ssh_extra_args = host_variables.get('ansible_ssh_extra_args', '')
         self.ssh_executable = host_variables.get('ansible_ssh_executable', 'ssh')
 
+    def _get_user_and_hostname(self):
+        if self.host:
+            user_and_hostname = '{user}@{host}'.format(user=self.user, host=self.host)
+        else:
+            # This case is useful when ssh connection information is held in
+            # config file like ~/.ssh/config instead of the inventory file
+            user_and_hostname = self.host_name
+        return user_and_hostname
+
     def _get_ssh_options(self):
         ssh_options = ' '.join([self.ssh_args, self.ssh_extra_args, self.ssh_common_args])
         if self.ssh_private_key_file:
@@ -58,11 +68,11 @@ class SSHConnectionCommand(ConnectionCommand):
         ssh_command = ''
         if self.password and self.password != ANSIBLE_NULL_VALUE:
             ssh_command += 'sshpass -p "{}"'.format(self.password)
-        ssh_command += ' {ssh_exec} {ssh_options} {user}@{host}'.format(
+
+        ssh_command += ' {ssh_exec} {ssh_options} {user_and_hostname}'.format(
             ssh_exec=self.ssh_executable,
             ssh_options=self._get_ssh_options(),
-            user=self.user,
-            host=self.host
+            user_and_hostname=self._get_user_and_hostname()
         )
         return ssh_command
 
