@@ -61,11 +61,14 @@ eval "$(ansibleconnect -i inventories/inventory.yml)"
 #### Possible flags
 
 * `-i`, `--inventory` - Path to ansible inventory
-* `-g`, `--groups` - Inventory groups of hosts to connect to (multiple groups should be concentrated with *:*. *!* in front of group name means that ansibleconnect should not connect to hosts form this group)
+* `-g`, `--groups` - Inventory groups of hosts to connect to (multiple groups should be concentrated with *:*. *!* in front of group name means that ansibleconnect should not connect to hosts form this group). Example: `-g computes:!storage`
 * `--hosts` - List of hostnames to connect to. Example: `--hosts hostA,hostB`
-* `-vars`, `--variables` - Variables that host should have defined in inventory to connect to it. Accepted format: *key:value* in case where host should have variable with specific value or *key* in case where host should have defined variable no matter what value.
-* `-novars`, `--no-variables` - Variables that host should not have defined in inventory to connect to it. Accepted format: *key:value* in case where host should not have variable with specific value or *key* in case where host should not have defined variable no matter what value.
+* `-vars`, `--variables` - Variables that host should have defined in inventory to connect to it. Accepted format: *key:value* in case where host should have variable with specific value or *key* in case where host should have defined variable no matter what value. Example: `-v type:dev,team:ui`
+* `-novars`, `--no-variables` - Variables that host should not have defined in inventory to connect to it. Accepted format: *key:value* in case where host should not have variable with specific value or *key* in case where host should not have defined variable no matter what value.Example: `-novars type:prod,team:sales`
 
+#### Configuration
+
+Ansibleconnect looks for the `ansible.cfg` file in the same locations as ansible. 
 
 ### Authentication
 

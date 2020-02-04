@@ -1,6 +1,7 @@
-from parameterized import parameterized
 import unittest
 import os
+
+from parameterized import parameterized
 
 from ansibleconnect.inventoryadapter import InventoryAdapter
 
