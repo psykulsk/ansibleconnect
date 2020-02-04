@@ -1,5 +1,15 @@
 # ansibleconnect changelog
 
+## 1.0.3
+
+2020-02-04
+
+### What's new
+
+ - SSH_AUTH_SOCK export command added do the command sent to each of the tmux panes
+ - Added support for connection options in the ansible.cfg file
+ - Changed syntax of the --variables and --no-variables options. Added examples
+
 ## 1.0.2
 
 2020-01-19

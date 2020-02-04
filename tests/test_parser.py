@@ -2,8 +2,8 @@ from parameterized import parameterized
 import unittest
 
 from ansibleconnect.parser import parse_hostnames, \
-                                   parse_inventory_groups, \
-                                   parse_vars
+    parse_inventory_groups, \
+    parse_vars
 
 
 class TestParser(unittest.TestCase):
@@ -46,9 +46,9 @@ class TestParser(unittest.TestCase):
         self.assertListEqual(hostnames, sorted(expected_output))
 
     @parameterized.expand([
-        (['var1:val1', 'var2:val2'], [('var1', 'val1'), ('var2', 'val2')]),
-        (['var1', 'var2'], [('var1', None), ('var2', None)]),
-        (['var1:val1', 'var2'], [('var1', 'val1'), ('var2', None)])
+        ('var1:val1,var2:val2', [('var1', 'val1'), ('var2', 'val2')]),
+        ('var1,var2', [('var1', None), ('var2', None)]),
+        ('var1:val1,var2', [('var1', 'val1'), ('var2', None)])
     ])
     def test_parse_vars(self, test_arg, expected_output):
         variables = sorted(parse_vars(test_arg))

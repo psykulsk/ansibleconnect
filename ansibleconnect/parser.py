@@ -14,7 +14,7 @@ def parse_arguments():
         '-g',
         '--groups',
         default=None,
-        help='Groups to connect with'
+        help="Groups to connect with. Example: -g 'computes:!storage'"
     )
     parser.add_argument(
         '--hosts',
@@ -25,13 +25,13 @@ def parse_arguments():
         '-vars',
         '--variables',
         default=None,
-        help='Inventory variables to select hosts'
+        help="Inventory variables to select hosts. Example: -v type:dev,team:ui"
     )
     parser.add_argument(
         '-novars',
         '--no-variables',
         default=None,
-        help='Inventory variables to deselect hosts'
+        help="Inventory variables to deselect hosts. Example: -novars type:prod,team:sales"
     )
     return parser.parse_args()
 
@@ -82,19 +82,15 @@ def parse_vars(variables):
     If variable has no variable (it should just exist)
     then it'll be appended as (key,)
 
-    :param variables: List of variables in args format (key:value)
-    :type variables: list
+    :param variables: string of variables in args format 'key:value,key2:value2,key3'
+    :type variables: str
 
     :return: List of parsed variables
     :rtype: list
     """
-    if not variables:
-        return None
-    if not isinstance(variables, list):
-        variables = [variables]
-
+    list_of_items = variables.split(',') if variables else []
     parsed_variables = []
-    for variable in variables:
+    for variable in list_of_items:
         if ':' in variable:
             parsed_variables.append(tuple(variable.split(':')))
         else:
