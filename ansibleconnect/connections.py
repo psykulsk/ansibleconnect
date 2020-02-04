@@ -20,12 +20,17 @@ class ConnectionCommand:
 class SSHConnectionCommand(ConnectionCommand):
     # Order in these key lists is important as the first found in the dict will be returned
     # Variable names from https://docs.ansible.com/ansible/latest/plugins/connection/ssh.html
+    # and https://docs.ansible.com/ansible/latest/reference_appendices/config.html
     SSH_HOST_KEYS = ['ansible_ssh_host', 'ansible_host']
-    SSH_HOST_KEY_CHECKING_KEYS = ['ansible_ssh_host_key_checking', 'ansible_host_key_checking']
+    SSH_HOST_KEY_CHECKING_KEYS = ['ansible_ssh_host_key_checking', 'ansible_host_key_checking',
+                                  'host_key_checking']
     SSH_PASSWORD_KEYS = ['ansible_ssh_password', 'ansible_ssh_pass', 'ansible_password']
-    SSH_PORT_KEYS = ['ansible_ssh_port', 'ansible_port']
-    SSH_PRIVATE_KEY_FILE_KEYS = ['ansible_ssh_private_key_file', 'ansible_private_key_file']
-    SSH_USER_KEYS = ['ansible_ssh_user', 'ansible_user']
+    SSH_PORT_KEYS = ['ansible_ssh_port', 'ansible_port', 'remote_port']
+    SSH_PRIVATE_KEY_FILE_KEYS = ['ansible_ssh_private_key_file', 'ansible_private_key_file',
+                                 'private_key_file']
+    SSH_USER_KEYS = ['ansible_ssh_user', 'ansible_user', 'remote_user']
+    SSH_ARGS_KEYS = ['ansible_ssh_args', 'ssh_args']
+    SSH_EXECUTABLE_KEYS = ['ansible_ssh_executable', 'ssh_executable']
 
     def __init__(self, host_name, host_variables: dict):
         super().__init__(host_name, host_variables)
@@ -39,11 +44,13 @@ class SSHConnectionCommand(ConnectionCommand):
                                                                    self.SSH_PRIVATE_KEY_FILE_KEYS,
                                                                    None)
         self.user = get_first_from_list_or_default(host_variables, self.SSH_USER_KEYS, 'root')
-        self.ssh_args = host_variables.get('ansible_ssh_args',
-                                           '-C -o ControlMaster=auto -o ControlPersist=60s')
+        self.ssh_args = get_first_from_list_or_default(host_variables, self.SSH_ARGS_KEYS,
+                                                       '-C -o ControlMaster=auto'
+                                                       '-o ControlPersist=60s')
         self.ssh_common_args = host_variables.get('ansible_ssh_common_args', '')
         self.ssh_extra_args = host_variables.get('ansible_ssh_extra_args', '')
-        self.ssh_executable = host_variables.get('ansible_ssh_executable', 'ssh')
+        self.ssh_executable = get_first_from_list_or_default(host_variables,
+                                                             self.SSH_EXECUTABLE_KEYS, 'ssh')
 
     def _get_user_and_hostname(self):
         if self.host:
