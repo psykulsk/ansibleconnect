@@ -20,7 +20,10 @@ def tmux_start_command() -> str:
 
 def ssh_auth_socket_env_var_command() -> str:
     auth_socket = os.environ.get("SSH_AUTH_SOCK", "")
-    return "export SSH_AUTH_SOCK={}".format(auth_socket)
+    if auth_socket == "":
+        return "export SSH_AUTH_SOCK={}".format(auth_socket)
+    else:
+        return ""
 
 
 def create_tmux_script(hosts: List[AnsibleHostAdapter]) -> str:
