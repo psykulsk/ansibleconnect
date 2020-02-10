@@ -46,7 +46,7 @@ class SSHConnectionCommand(ConnectionCommand):
         self.user = get_first_from_list_or_default(host_variables, self.SSH_USER_KEYS, 'root')
         self.ssh_args = get_first_from_list_or_default(host_variables, self.SSH_ARGS_KEYS,
                                                        '-C -o ControlMaster=auto'
-                                                       '-o ControlPersist=60s')
+                                                       ' -o ControlPersist=60s')
         self.ssh_common_args = host_variables.get('ansible_ssh_common_args', '')
         self.ssh_extra_args = host_variables.get('ansible_ssh_extra_args', '')
         self.ssh_executable = get_first_from_list_or_default(host_variables,
