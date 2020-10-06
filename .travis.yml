@@ -1,17 +1,16 @@
 language: python
 python:
-  - "3.5"
+  - "3.7"
   - "3.8"
 env:
-  - USED_ANSIBLE_VERSION=2.5
-  - USED_ANSIBLE_VERSION=2.6
   - USED_ANSIBLE_VERSION=2.7
   - USED_ANSIBLE_VERSION=2.8
   - USED_ANSIBLE_VERSION=2.9
+  - USED_ANSIBLE_VERSION=2.10
 install:
+  - pip install --force-reinstall ansible==$USED_ANSIBLE_VERSION
   - pip install tox
   - pip install .
-  - pip install --force-reinstall ansible==$USED_ANSIBLE_VERSION
 script:
   - tox
   - ansibleconnect -i tests/files/inventory.yml
