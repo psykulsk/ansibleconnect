@@ -8,10 +8,10 @@ env:
   - USED_ANSIBLE_VERSION=2.9
   - USED_ANSIBLE_VERSION=2.10
 install:
+  - pip uninstall -y ansible
+  - rm -rf /usr/local/lib/python3.7/site-packages/ansible || rm -rf /usr/local/lib/python3.8/site-packages/ansible || true
   - pip install tox
   - pip install .
-  - pip uninstall ansible
-  - rm -rf /usr/local/lib/python3.7/site-packages/ansible || rm -rf /usr/local/lib/python3.8/site-packages/ansible || true
   - pip install --force-reinstall ansible==$USED_ANSIBLE_VERSION
 script:
   - tox
