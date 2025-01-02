@@ -29,9 +29,14 @@ def ssh_auth_socket_env_var_command() -> str:
 def create_tmux_script(hosts: List[AnsibleHostAdapter]) -> str:
     tmux_file_lines = [tmux_start_command()]
     for index, host in enumerate(hosts):
-        tmux_file_lines.append("send-keys '{extra_commands}; {conn_command}' C-m".format(
-            extra_commands=ssh_auth_socket_env_var_command(),
-            conn_command=host.connection_command))
+        first_line = "send-keys '"
+        extra_commands = ssh_auth_socket_env_var_command()
+        if extra_commands != "":
+            first_line += "{extra_commands};".format(
+                extra_commands=ssh_auth_socket_env_var_command())
+        first_line += "{conn_command}' C-m".format(
+            conn_command=host.connection_command)
+        tmux_file_lines.append(first_line)
         if index != len(hosts) - 1:
             tmux_file_lines.append("split-window -h")
             # tiled layout rearranges panes so that each pane has the same size
