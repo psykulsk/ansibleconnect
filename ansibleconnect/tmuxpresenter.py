@@ -26,7 +26,7 @@ def ssh_auth_socket_env_var_command() -> str:
         return ""
 
 
-def create_tmux_script(hosts: List[AnsibleHostAdapter]) -> str:
+def create_tmux_script(hosts: List[AnsibleHostAdapter], use_windows: bool) -> str:
     tmux_file_lines = [tmux_start_command()]
     for index, host in enumerate(hosts):
         first_line = "send-keys '"
@@ -38,7 +38,10 @@ def create_tmux_script(hosts: List[AnsibleHostAdapter]) -> str:
             conn_command=host.connection_command)
         tmux_file_lines.append(first_line)
         if index != len(hosts) - 1:
-            tmux_file_lines.append("split-window -h")
+            if use_windows:
+                tmux_file_lines.append(f"new-window -n {hosts[index+1].host_name}")
+            else:
+                tmux_file_lines.append("split-window -h")
             # tiled layout rearranges panes so that each pane has the same size
             tmux_file_lines.append("select-layout tiled")
     # \; is printed so that ; can be interpreted by tmux instead of shell

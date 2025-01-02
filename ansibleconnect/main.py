@@ -41,7 +41,7 @@ def main():
                                                       variables,
                                                       no_variables)
     hosts_adapters = [AnsibleHostAdapter(host) for host in hosts_list]
-    tmux_script = create_tmux_script(hosts_adapters)
+    tmux_script = create_tmux_script(hosts_adapters, args.windows)
     print(tmux_script)
 
 

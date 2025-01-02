@@ -64,6 +64,7 @@ eval "$(ansibleconnect -i inventories/inventory.yml)"
 * `--hosts` - List of hostnames to connect to. Example: `--hosts hostA,hostB`
 * `-vars`, `--variables` - Variables that host should have defined in inventory to connect to it. Accepted format: *key:value* in case where host should have variable with specific value or *key* in case where host should have defined variable no matter what value. Example: `-v type:dev,team:ui`
 * `-novars`, `--no-variables` - Variables that host should not have defined in inventory to connect to it. Accepted format: *key:value* in case where host should not have variable with specific value or *key* in case where host should not have defined variable no matter what value.Example: `-novars type:prod,team:sales`
+* `-w`, `--windows` - If present, then the output tmux command will create new window for each host session instead of a new pane
 
 #### Configuration
 

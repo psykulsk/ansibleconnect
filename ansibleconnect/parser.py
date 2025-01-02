@@ -33,6 +33,14 @@ def parse_arguments():
         default=None,
         help="Inventory variables to deselect hosts. Example: -novars type:prod,team:sales"
     )
+    parser.add_argument(
+        '-w',
+        '--windows',
+        action='store_const',
+        default=False,
+        const=True,
+        help="If present, then the output tmux command will create new window for each host session instead of a new pane"
+    )
     return parser.parse_args()
 
 
